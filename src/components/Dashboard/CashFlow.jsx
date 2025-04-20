@@ -2,12 +2,12 @@ import React from 'react'
 
 function CashFlow() {
 
-    const incomeSources = JSON.parse(localStorage.getItem("incomeSources"));
+    const incomeSources = JSON.parse(localStorage.getItem("incomeSources")) || [0,0];
     let totalIncome = 0;
     incomeSources.forEach(source => { totalIncome += source.amount });
     totalIncome = totalIncome.toFixed(2);
 
-    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [];
+    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [0,0];
     let totalExpenses = 0;
     regularExpenses.forEach(source => { totalExpenses += source.amount });
     totalExpenses = totalExpenses.toFixed(2);

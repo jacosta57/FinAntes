@@ -3,7 +3,7 @@ import { Line } from 'react-chartjs-2';
 
 function Portfolio() {
 
-    const investments = JSON.parse(localStorage.getItem("investments"))
+    const investments = JSON.parse(localStorage.getItem("investments")) || [{ currentValue: 0, shares: 0}]
     let totalCurrentValue = 0;
     let totalBuyValue = 0;
 
@@ -16,7 +16,6 @@ function Portfolio() {
     if (totalBuyValue > 0) {
         returnPercent = ((totalCurrentValue - totalBuyValue) / totalBuyValue * 100).toFixed(2);
     } else {
-        z
         returnPercent = "0.00";
     }
 
