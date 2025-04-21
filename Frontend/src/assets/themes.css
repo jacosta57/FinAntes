@@ -43,7 +43,7 @@
 
 /* ===== COLOR SCHEMES ===== */
 /* Blue Scheme - Default */
-[data-color-scheme="blue"] {
+[data-color="blue"] {
   --accent-color: #2962ff;
   --secondary-accent: #00C853;
   --btn-primary-bg: #2962ff;
@@ -56,7 +56,7 @@
 }
 
 /* Blue Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="blue"] {
+[data-theme="dark"][data-color="blue"] {
   --accent-color: #90caf9;
   --secondary-accent: #69f0ae;
   --btn-primary-bg: #90caf9;
@@ -69,7 +69,7 @@
 }
 
 /* Green Scheme */
-[data-color-scheme="green"] {
+[data-color="green"] {
   --accent-color: #00C853;
   --secondary-accent: #2962ff;
   --btn-primary-bg: #00C853;
@@ -82,7 +82,7 @@
 }
 
 /* Green Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="green"] {
+[data-theme="dark"][data-color="green"] {
   --accent-color: #69f0ae;
   --secondary-accent: #90caf9;
   --btn-primary-bg: #69f0ae;
@@ -95,7 +95,7 @@
 }
 
 /* Purple Scheme */
-[data-color-scheme="purple"] {
+[data-color="purple"] {
   --accent-color: #6200EA;
   --secondary-accent: #00C853;
   --btn-primary-bg: #6200EA;
@@ -108,7 +108,7 @@
 }
 
 /* Purple Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="purple"] {
+[data-theme="dark"][data-color="purple"] {
   --accent-color: #b388ff;
   --secondary-accent: #69f0ae;
   --btn-primary-bg: #b388ff;
@@ -121,7 +121,7 @@
 }
 
 /* Orange Scheme */
-[data-color-scheme="orange"] {
+[data-color="orange"] {
   --accent-color: #FF6D00;
   --secondary-accent: #2962ff;
   --btn-primary-bg: #FF6D00;
@@ -134,7 +134,7 @@
 }
 
 /* Orange Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="orange"] {
+[data-theme="dark"][data-color="orange"] {
   --accent-color: #FFAB40;
   --secondary-accent: #90caf9;
   --btn-primary-bg: #FFAB40;
@@ -147,7 +147,7 @@
 }
 
 /* Teal Scheme */
-[data-color-scheme="teal"] {
+[data-color="teal"] {
   --accent-color: #00BFA5;
   --secondary-accent: #FF6D00;
   --btn-primary-bg: #00BFA5;
@@ -160,7 +160,7 @@
 }
 
 /* Teal Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="teal"] {
+[data-theme="dark"][data-color="teal"] {
   --accent-color: #64FFDA;
   --secondary-accent: #FFAB40;
   --btn-primary-bg: #64FFDA;
@@ -173,7 +173,7 @@
 }
 
 /* Red Scheme */
-[data-color-scheme="red"] {
+[data-color="red"] {
   --accent-color: #D50000;
   --secondary-accent: #00BFA5;
   --btn-primary-bg: #D50000;
@@ -186,7 +186,7 @@
 }
 
 /* Red Scheme - Dark Mode Adjustments */
-[data-theme="dark"][data-color-scheme="red"] {
+[data-theme="dark"][data-color="red"] {
   --accent-color: #FF5252;
   --secondary-accent: #64FFDA;
   --btn-primary-bg: #FF5252;

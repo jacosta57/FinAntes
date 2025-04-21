@@ -11,9 +11,9 @@ function Navbar() {
     case '/dashboard':
       navbarLinks = (
         <>
-          <span id="UserStatus" class="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
-          <NavLink to="./finances.html"><button id="FinancesButton" class="btn btn-outline-light mx-2">Edit Data</button></NavLink>
-          <NavLink to="./settings.html"><button id="SettingsButton" class="btn btn-outline-light">Settings</button></NavLink>
+          <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
+          <NavLink to="./finances"><button id="FinancesButton" className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
+          <NavLink to="./settings"><button id="SettingsButton" className="btn btn-outline-light">Settings</button></NavLink>
         </>
       )
       break;
