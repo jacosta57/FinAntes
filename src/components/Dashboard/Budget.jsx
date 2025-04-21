@@ -1,10 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Chart as ChartJS } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { context } from 'themeContext';
 
 function Budget() {
-  
-    let textColor = localStorage.getItem('theme') === 'light' ? '000' : 'FFF';
+
+    const {theme} = useContext(context)
+    let textColor;
+
+    useEffect(() => {
+      textColor = theme === 'light' ? '#000000' : '#FFFFFF'
+    }, [theme]);
+
     const budgetCategories = JSON.parse(localStorage.getItem("budgetCategories")) || [];
 
     let totalBudget = 0;
@@ -130,7 +137,7 @@ function Budget() {
 
     useEffect(() => {
       ChartJS.register(doughnutCenterText);
-    }, []);
+    }, [theme]);
 
 
     return (
