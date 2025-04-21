@@ -1,96 +1,32 @@
+import Budget from "./Budget";
+import CashFlow from "./CashFlow";
+import Spending from "./Spending";
+import Portfolio from './Portfolio';
+import Goals from './Goals';
+import Expenses from "./Expenses";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement } from 'chart.js';
+
 function Dashboard() {
+
+    let textColor = localStorage.getItem('theme') === 'light' ? '#000000' : '#FFFFFF';
+
+    ChartJS.register(ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement);
+    ChartJS.defaults.color = textColor;
+    
+
+
     return (
         <>
-            <div id="DashboardContainer" class="container-fluid py-4">
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div id="item1" class="card h-100 shadow-sm">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0 text-primary">Budget Overview</h5>
-                            </div>
-                            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                <canvas id="DoughnutChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div id="item2" class="card h-100 shadow-sm">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0 text-primary">Monthly Spending</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="BarChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div id="item3" class="card h-100 shadow-sm">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0 text-primary">Cash Flow</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span>Income</span>
-                                    <span id="CashFlow-Income" class="text-success">$0</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-3">
-                                    <span>Expenses</span>
-                                    <span id="CashFlow-Expenses" class="text-danger">$0</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span class="fw-bold">Net Flow</span>
-                                    <span id="CashFlow-Net" class="text-success fw-bold">+$0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div id="DashboardContainer" className="container-fluid py-4">
+                <div className="row g-4 mb-4">
+                    <Budget />
+                    <Spending />
+                    <CashFlow />
                 </div>
-
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div id="item4" class="card h-100 shadow-sm">
-                            <div class="card-header ">
-                                <h5 class="card-title mb-0 text-primary">Investment Portfolio</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="LineChart"></canvas>
-                                <div class="mt-3">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span>Total Portfolio</span>
-                                        <span id="Investment-Total">$0</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <span>This Month</span>
-                                        <span id="Investment-Percent">0%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div id="item5" class="card h-100 shadow-sm">
-                            <div class="card-header ">
-                                <h5 class="card-title mb-0 text-primary">Financial Goals</h5>
-                            </div>
-                            <div class="card-body">
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div id="item6" class="card h-100 shadow-sm">
-                            <div class="card-header ">
-                                <h5 class="card-title mb-0 text-primary">Upcoming Expenses</h5>
-                            </div>
-                            <div class="card-body">
-
-                            </div>
-                        </div>
-                    </div>
+                <div className="row g-4">
+                    <Portfolio />
+                    <Goals />
+                    <Expenses />
                 </div>
             </div>
         </>
