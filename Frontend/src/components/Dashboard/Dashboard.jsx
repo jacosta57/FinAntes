@@ -4,15 +4,17 @@ import Spending from "./Spending";
 import Portfolio from './Portfolio';
 import Goals from './Goals';
 import Expenses from "./Expenses";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement} from 'chart.js';
-
-
-ChartJS.register(ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement);
-let textColor = localStorage.getItem('theme') === 'light' ? '000' : 'FFF';
-
-ChartJS.defaults.color = textColor;
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement } from 'chart.js';
 
 function Dashboard() {
+
+    let textColor = localStorage.getItem('theme') === 'light' ? '#000000' : '#FFFFFF';
+
+    ChartJS.register(ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement);
+    ChartJS.defaults.color = textColor;
+    
+
+
     return (
         <>
             <div id="DashboardContainer" className="container-fluid py-4">

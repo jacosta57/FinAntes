@@ -12,11 +12,20 @@ function Navbar() {
       navbarLinks = (
         <>
           <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
-          <NavLink to="./finances.html"><button id="FinancesButton" className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
-          <NavLink to="./settings.html"><button id="SettingsButton" className="btn btn-outline-light">Settings</button></NavLink>
+          <NavLink to="./finances"><button id="FinancesButton" className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
+          <NavLink to="./settings"><button id="SettingsButton" className="btn btn-outline-light">Settings</button></NavLink>
         </>
       )
       break;
+      case '/settings':
+        navbarLinks = (
+          <>
+            <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
+            <NavLink to="./finances"><button id="FinancesButton" className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
+            <NavLink to="./dashboard"><button id="SettingsButton" className="btn btn-outline-light">Back to Dashboard</button></NavLink>
+          </>
+        )
+        break;
     default:
       navbarLinks = (
         <>
