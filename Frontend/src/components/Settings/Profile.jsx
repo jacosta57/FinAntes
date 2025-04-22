@@ -10,6 +10,11 @@ function Profile() {
         phone: '',
         password: '',
     });
+    const [password, setPassword] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
 
     const validateUinfo = () => {
         const newErrors = {};
@@ -55,31 +60,60 @@ function Profile() {
         }
     };
 
-    const handleSubmitPassword = (e) => {
-        e.preventDefault();
+    const handleChangePassword = (e) => {
+        const id = e.target.id;
+        let value = e.target.value;
 
-        if (validateUinfo()) {
-            localStorage.setItem('profile', JSON.stringify(uinfo))
+        setPassword({
+            ...password,
+            [id]: value
+        });
+
+        if (errors[id]) {
+            setErrors({
+                ...errors,
+                [id]: ''
+            });
         }
     };
 
+    const handleSubmitPassword = (e) => {
+        e.preventDefault();
 
-    const [password, setPassword] = useState({ new: '', confirm: '' });
+        if (isValidPassword()) {
+            const newUinfo = JSON.parse(localStorage.getItem('profile'));
+            newUinfo.password = password.newPassword
+            localStorage.setItem('profile', JSON.stringify(newUinfo));
+            setPassword({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            })
+            alert('New password set');
+        }
+    };
 
     const isValidPassword = () => {
-        const newErrors = {}
-        if (password.new != password.confirm) { newErrors.confirm = 'New passowrd and confirmation must match' }
-        if (!password.length > 7
-            && /[A-Z]/.test(password)
-            && /[a-z]/.test(password)
-            && /[0-9]/.test(password)) { newErrors.new = 'Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number.' }
-        if (uinfo.password !== password.new) { newErrors.password = 'Current password is incorrect' }
-        
+        const newErrors = {};
+
+        if (password.newPassword !== password.confirmPassword) {
+            newErrors.confirmPassword = 'New password and confirmation must match';
+        }
+        if (
+            password.newPassword.length < 8 ||
+            !/[A-Z]/.test(password.newPassword) ||
+            !/[a-z]/.test(password.newPassword) ||
+            !/[0-9]/.test(password.newPassword)
+        ) {
+            newErrors.newPassword = 'Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number.';
+        }
+        if (uinfo.password !== password.currentPassword) {
+            newErrors.currentPassword = 'Current password is incorrect';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-
 
 
 
@@ -121,18 +155,21 @@ function Profile() {
             <div className="card mb-4">
                 <div className="card-header">Change Password</div>
                 <div className="card-body">
-                    <form id="passwordForm">
+                    <form id="passwordForm" onSubmit={handleSubmitPassword}>
                         <div className="mb-3">
                             <label htmlFor="currentPassword" className="form-label">Current Password</label>
-                            <input type="password" className="form-control" id="currentPassword" />
+                            <input type="password" className="form-control" id="currentPassword" value={password.currentPassword} onChange={handleChangePassword} />
+                            {errors.currentPassword && <p className="text-danger fs-7 m-0">{errors.currentPassword}</p>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="newPassword" className="form-label">New Password</label>
-                            <input type="password" className="form-control" id="newPassword" />
+                            <input type="password" className="form-control" id="newPassword" value={password.newPassword} onChange={handleChangePassword} />
+                            {errors.newPassword && <p className="text-danger fs-7 m-0">{errors.newPassword}</p>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="confirmPassword" className="form-label">Confirm New Password</label>
-                            <input type="password" className="form-control" id="confirmPassword" />
+                            <input type="password" className="form-control" id="confirmPassword" value={password.confirmPassword} onChange={handleChangePassword} />
+                            {errors.confirmPassword && <p className="text-danger fs-7 m-0">{errors.confirmPassword}</p>}
                         </div>
                         <button type="submit" className="btn btn-primary">Update Password</button>
                     </form>
