@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 function Profile() {
-
     const [errors, setErrors] = useState({});
     const [uinfo, setUinfo] = useState(JSON.parse(localStorage.getItem('profile')) || {
         firstname: '',

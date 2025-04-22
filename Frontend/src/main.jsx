@@ -1,12 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { StrictMode, createContext } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './pages/App.jsx'
-import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route } from 'react-router-dom'
-import RootLayout from './pages/RootLayout.jsx'
-import Dashboard from './components/Dashboard/Dashboard.jsx'
-import Settings from './components/Settings/Settings.jsx'
 import './assets/themes.css'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route } from 'react-router-dom'
+import App from 'pages/App'
+import RootLayout from 'pages/RootLayout'
+import Dashboard from 'pages/Dashboard'
+import Settings from 'pages/Settings'
 
 
 const router = createBrowserRouter(

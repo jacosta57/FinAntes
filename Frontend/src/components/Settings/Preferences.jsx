@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap'
 
 function Preferences() {
-
     const [showModal, setShowModal] = useState(false);
     const [confirmChecked, setConfirmChecked] = useState(false);
 
@@ -13,46 +12,33 @@ function Preferences() {
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-
                 const keys = Object.keys(localStorage);
 
-                keys.forEach((key) => {
-                    localStorage.removeItem(key);
-                });
+                keys.forEach((key) => { localStorage.removeItem(key) });
 
                 Object.keys(data).forEach((key) => {
-                    if (key === "theme" || key === "color") {
-                        localStorage.setItem(key, data[key]);
-                    } else {
-                        localStorage.setItem(key, JSON.stringify(data[key]));
-                    }
+                    if (key === "theme" || key === "color") { localStorage.setItem(key, data[key]) }
+                    else { localStorage.setItem(key, JSON.stringify(data[key])) }
                 });
 
                 alert("Data imported successfully!");
                 location.reload();
-            } catch (error) {
-                alert("Error importing data: " + error.message);
-            }
+            } catch (error) { alert("Error importing data: " + error.message) }
         };
-
         reader.readAsText(file);
     };
 
     const exportOnClick = () => {
         const data = {};
-
         const keys = Object.keys(localStorage);
+
         keys.forEach((key) => {
-            try {
-                data[key] = JSON.parse(localStorage.getItem(key));
-            } catch (e) {
-                data[key] = localStorage.getItem(key);
-            }
+            try { data[key] = JSON.parse(localStorage.getItem(key)) }
+            catch (e) { data[key] = localStorage.getItem(key) }
         });
 
         const dataStr = JSON.stringify(data, null, 2);
-        const dataUri =
-            "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+        const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
         const exportFileDefaultName = "finantes-data.json";
 
@@ -66,11 +52,7 @@ function Preferences() {
         const preserveKeys = ["theme", "color", "profile"];
         const keys = Object.keys(localStorage);
 
-        keys.forEach((key) => {
-            if (!preserveKeys.includes(key)) {
-                localStorage.removeItem(key);
-            }
-        });
+        keys.forEach((key) => { if (!preserveKeys.includes(key)) { localStorage.removeItem(key) } });
 
         alert("All data has been cleared successfully.");
 

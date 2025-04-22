@@ -1,21 +1,17 @@
-import React from 'react'
-
 function CashFlow() {
-
-    const incomeSources = JSON.parse(localStorage.getItem("incomeSources")) || [{amount: 0}];
+    const incomeSources = JSON.parse(localStorage.getItem("incomeSources")) || [{ amount: 0 }];
     let totalIncome = 0;
     incomeSources.forEach(source => { totalIncome += source.amount });
     totalIncome = totalIncome.toFixed(2);
 
-    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [{amount: 0}];
+    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [{ amount: 0 }];
     let totalExpenses = 0;
     regularExpenses.forEach(source => { totalExpenses += source.amount });
     totalExpenses = totalExpenses.toFixed(2);
 
     const totalNet = (totalIncome - totalExpenses).toFixed(2);
     let netClass = totalNet > 0 ? 'text-success' : 'text-danger';
-    netClass += ' fw-bold'
-    
+    netClass += ' fw-bold';
 
     return (
         <div className="col-md-4">

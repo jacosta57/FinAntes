@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
-import Navbar from '../components/Navbar/Navbar';
+import Navbar from 'components/Navbar/Navbar';
 import { context } from 'themeContext'
 
 function RootLayout() {

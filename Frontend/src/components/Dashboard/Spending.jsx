@@ -1,4 +1,3 @@
-import React from 'react'
 import { Chart } from 'react-chartjs-2';
 
 function Expenses() {
@@ -10,7 +9,6 @@ function Expenses() {
 
         switch (expense.frequency.toLowerCase()) {
             case 'weekly':
-                // Add to each week
                 weeklySpendings[0] += amount;
                 weeklySpendings[1] += amount;
                 weeklySpendings[2] += amount;
@@ -18,20 +16,16 @@ function Expenses() {
                 break;
 
             case 'bi-weekly':
-                // Add to second and fourth weeks
                 weeklySpendings[1] += amount;
                 weeklySpendings[3] += amount;
                 break;
 
             case 'annually':
-                // Divide by 12 and add to first week
                 weeklySpendings[0] += amount / 12;
                 break;
 
             case 'monthly':
-            default:
-                // Add to first week
-                weeklySpendings[0] += amount;
+            default: weeklySpendings[0] += amount;
         }
     });
 
@@ -81,8 +75,6 @@ function Expenses() {
                 </div>
             </div>
         </div>
-
-
     )
 }
 

@@ -1,32 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 function Appearance() {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const [color, setColorScheme] = useState(
-    localStorage.getItem("color") || "blue"
-  );
+    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+    const [color, setColorScheme] = useState(localStorage.getItem("color") || "blue");
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.setAttribute("data-color", color);
-  }, [theme, color]);
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.setAttribute("data-color", color);
+    }, [theme, color]);
 
-  function changeTheme(e) {
-    const newTheme = e.target.value;
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-  }
+    function changeTheme(e) {
+        const newTheme = e.target.value;
+        setTheme(newTheme);
+        localStorage.setItem("theme", newTheme);
+    }
 
-  function changeColor(e) {
-    const newColorScheme = e.target.value;
-    setColorScheme(newColorScheme);
-    localStorage.setItem("color", newColorScheme);
-  }
+    function changeColor(e) {
+        const newColorScheme = e.target.value;
+        setColorScheme(newColorScheme);
+        localStorage.setItem("color", newColorScheme);
+    }
 
     return (
         <div className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4 settings-content">
             <h3 className="mb-4 text-primary">Theme Settings</h3>
-
 
             <div className="card mb-4">
                 <div className="card-header">Theme Mode</div>
@@ -49,44 +46,44 @@ function Appearance() {
                 <div className="card-body">
                     <div className="d-flex gap-3 flex-wrap">
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="blueScheme" value='blue' checked={color === 'blue'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="blueScheme" value='blue' checked={color === 'blue'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="blueScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#2962FF' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#2962FF' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="greenScheme" value='green' checked={color === 'green'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="greenScheme" value='green' checked={color === 'green'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="greenScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00C853' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00C853' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="purpleScheme" value='purple' checked={color === 'purple'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="purpleScheme" value='purple' checked={color === 'purple'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="purpleScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#6200EA' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#6200EA' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="orangeScheme" value='orange' checked={color === 'orange'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="orangeScheme" value='orange' checked={color === 'orange'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="orangeScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#FF6D00' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#FF6D00' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="tealScheme" value='teal' checked={color === 'teal'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="tealScheme" value='teal' checked={color === 'teal'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="tealScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00BFA5' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00BFA5' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="redScheme" value='red' checked={color === 'red'} onChange={changeColor}/>
+                            <input className="form-check-input" type="radio" name="color" id="redScheme" value='red' checked={color === 'red'} onChange={changeColor} />
                             <label className="form-check-label" htmlFor="redScheme">
-                                <div className="color-swatch rounded-circle"style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#D50000' }}></div>
+                                <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#D50000' }}></div>
                             </label>
                         </div>
                     </div>

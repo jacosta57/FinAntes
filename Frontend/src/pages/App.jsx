@@ -1,11 +1,11 @@
-import Hero from "../components/Index/Hero"
-import Tiers from "../components/Index/Tiers"
+import Hero from "Index/Hero"
+import Tiers from "Index/Tiers"
 
 function App() {
   return (
     <>
-        <Hero />
-        <Tiers />
+      <Hero />
+      <Tiers />
     </>
   )
 }

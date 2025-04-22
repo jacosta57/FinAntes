@@ -1,9 +1,7 @@
-import React from 'react'
 import { Line } from 'react-chartjs-2';
 
 function Portfolio() {
-
-    const investments = JSON.parse(localStorage.getItem("investments")) || [{ currentValue: 0, shares: 0}]
+    const investments = JSON.parse(localStorage.getItem("investments")) || [{ currentValue: 0, shares: 0 }]
     let totalCurrentValue = 0;
     let totalBuyValue = 0;
 
@@ -13,14 +11,10 @@ function Portfolio() {
     })
 
     let returnPercent;
-    if (totalBuyValue > 0) {
-        returnPercent = ((totalCurrentValue - totalBuyValue) / totalBuyValue * 100).toFixed(2);
-    } else {
-        returnPercent = "0.00";
-    }
+    if (totalBuyValue > 0) { returnPercent = ((totalCurrentValue - totalBuyValue) / totalBuyValue * 100).toFixed(2) }
+    else { returnPercent = "0.00" }
 
     const returnClass = returnPercent >= 0 ? "text-success" : "text-danger";
-
 
     const chartData = {
         labels: ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -40,7 +34,7 @@ function Portfolio() {
                     <h5 className="card-title mb-0 text-primary">Investment Portfolio</h5>
                 </div>
                 <div className="card-body">
-                    <Line data={chartData}/>
+                    <Line data={chartData} />
                     <div className="mt-3">
                         <div className="d-flex justify-content-between mb-2">
                             <span>Total Portfolio</span>

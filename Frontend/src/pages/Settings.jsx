@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import Appearance from './Appearance';
-import Profile from './Profile';
-import Preferences from './Preferences';
+import { useState } from 'react';
+import Appearance from 'Settings/Appearance';
+import Profile from 'Settings/Profile';
+import Preferences from 'Settings/Preferences';
 
 function Settings() {
-
     const [activeTab, setActiveTab] = useState('appearance')
 
     const onClickHandler = (e) => {
@@ -22,9 +21,9 @@ function Settings() {
                     </div>
                 </div>
 
-                {activeTab === 'appearance' && <Appearance /> }
-                {activeTab === 'profile' && <Profile /> }
-                {activeTab === 'preferences' && <Preferences /> }
+                {activeTab === 'appearance' && <Appearance />}
+                {activeTab === 'profile' && <Profile />}
+                {activeTab === 'preferences' && <Preferences />}
 
             </div>
         </div>

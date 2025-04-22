@@ -7,8 +7,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "themeContext": "/src/themeContext.jsx",
-      "components": "/src/components",
-      "pages" : "/src/pages"
+      "Index": "/src/components/Index",
+      "Dashboard": "/src/components/Dashboard",
+      "Settings": "/src/components/Settings",
+      "components": "/src/components/",
+      "pages": "/src/pages",
     }
   }
 })
