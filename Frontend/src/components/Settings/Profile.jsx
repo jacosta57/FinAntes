@@ -34,46 +34,23 @@ function Profile() {
         const id = e.target.id;
         let value = e.target.value;
 
-        if (id === 'phone') {
-            value = value.replace(/[^0-9]/gi, '').substring(0, 10);
-        }
-
-        setUinfo({
-            ...uinfo,
-            [id]: value
-        });
-
-        if (errors[id]) {
-            setErrors({
-                ...errors,
-                [id]: ''
-            });
-        }
+        if (id === 'phone') { value = value.replace(/[^0-9]/gi, '').substring(0, 10) }
+        setUinfo({ ...uinfo, [id]: value });
+        if (errors[id]) { setErrors({ ...errors, [id]: '' }) }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (validateUinfo()) {
-            localStorage.setItem('profile', JSON.stringify(uinfo))
-        }
+        if (validateUinfo()) { localStorage.setItem('profile', JSON.stringify(uinfo)) }
+        alert("Personal information has been updated!")
     };
 
     const handleChangePassword = (e) => {
         const id = e.target.id;
         let value = e.target.value;
 
-        setPassword({
-            ...password,
-            [id]: value
-        });
-
-        if (errors[id]) {
-            setErrors({
-                ...errors,
-                [id]: ''
-            });
-        }
+        setPassword({ ...password, [id]: value });
+        if (errors[id]) { setErrors({ ...errors, [id]: '' }) }
     };
 
     const handleSubmitPassword = (e) => {
@@ -95,26 +72,18 @@ function Profile() {
     const isValidPassword = () => {
         const newErrors = {};
 
-        if (password.newPassword !== password.confirmPassword) {
-            newErrors.confirmPassword = 'New password and confirmation must match';
-        }
+        if (password.newPassword !== password.confirmPassword) { newErrors.confirmPassword = 'New password and confirmation must match' }
         if (
             password.newPassword.length < 8 ||
             !/[A-Z]/.test(password.newPassword) ||
             !/[a-z]/.test(password.newPassword) ||
             !/[0-9]/.test(password.newPassword)
-        ) {
-            newErrors.newPassword = 'Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number.';
-        }
-        if (uinfo.password !== password.currentPassword) {
-            newErrors.currentPassword = 'Current password is incorrect';
-        }
+        ) { newErrors.newPassword = 'Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number.' }
+        if (uinfo.password !== password.currentPassword) { newErrors.currentPassword = 'Current password is incorrect' }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-
 
     return (
         <div id="profile-section" className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4 settings-content">
@@ -174,10 +143,6 @@ function Profile() {
                     </form>
                 </div>
             </div>
-
-
-
-
         </div>
     )
 }
