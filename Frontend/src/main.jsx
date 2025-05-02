@@ -14,7 +14,7 @@ const router = createBrowserRouter(
     <Route path='/' element={<RootLayout />}>
       <Route path='/' element={<App />} />
       {/* <Route path='/authors' element={<Authors />}/> */}
-      {/* <Route path='/creditcards' element={<CreditCards />}/> */}
+      {<Route path='/creditcards' element={<CreditCards />}/>}
       <Route path='/dashboard' element={<Dashboard />} />
       {/* <Route path='/demo' element={<Demo />}/> */}
       {/* <Route path='/finances' element={<Finances />}/> */}
