@@ -7,13 +7,14 @@ import App from 'pages/App'
 import RootLayout from 'pages/RootLayout'
 import Dashboard from 'pages/Dashboard'
 import Settings from 'pages/Settings'
+import Authors from 'pages/Authors'
 
 
 const router = createBrowserRouter(
   createRoutesFromElements((
     <Route path='/' element={<RootLayout />}>
       <Route path='/' element={<App />} />
-      {/* <Route path='/authors' element={<Authors />}/> */}
+      {<Route path='/authors' element={<Authors />}/>}
       {/* <Route path='/creditcards' element={<CreditCards />}/> */}
       <Route path='/dashboard' element={<Dashboard />} />
       {/* <Route path='/demo' element={<Demo />}/> */}
