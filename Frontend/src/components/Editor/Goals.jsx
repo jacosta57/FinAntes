@@ -1,0 +1,211 @@
+import React, { useState, useEffect } from 'react';
+
+function Goals() {
+  const [goals, setGoals] = useState([]);
+  const [selectedGoalIndex, setSelectedGoalIndex] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    targetAmount: '',
+    currentAmount: '',
+    targetDate: ''
+  });
+
+  useEffect(() => {
+    const loadedGoals = JSON.parse(localStorage.getItem("financialGoals") || "[]");
+    setGoals(loadedGoals);
+  }, []);
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData({
+      ...formData,
+      [id]: value
+    });
+  };
+
+  const selectGoal = (index) => {
+    const goal = goals[index];
+    
+    if (!goal) return;
+    
+    setFormData({
+      name: goal.name,
+      targetAmount: goal.targetAmount,
+      currentAmount: goal.currentAmount,
+      targetDate: goal.targetDate
+    });
+    
+    setSelectedGoalIndex(index);
+  };
+
+  const handleAddGoal = () => {
+    setFormData({
+      name: '',
+      targetAmount: '',
+      currentAmount: '',
+      targetDate: ''
+    });
+    
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+    setFormData(prev => ({
+      ...prev,
+      targetDate: oneYearFromNow.toISOString().split('T')[0]
+    }));
+    
+    setSelectedGoalIndex(null);
+  };
+
+  const handleSaveGoal = (e) => {
+    e.preventDefault();
+    
+    const goalData = {
+      name: formData.name,
+      targetAmount: parseFloat(formData.targetAmount),
+      currentAmount: parseFloat(formData.currentAmount),
+      targetDate: formData.targetDate
+    };
+
+    if (!goalData.name) {
+      alert("Please enter a goal name.");
+      return;
+    }
+
+    if (isNaN(goalData.targetAmount) || goalData.targetAmount <= 0) {
+      alert("Please enter a valid target amount.");
+      return;
+    }
+
+    if (isNaN(goalData.currentAmount) || goalData.currentAmount < 0) {
+      goalData.currentAmount = 0;
+    }
+
+    if (!goalData.targetDate) {
+      alert("Please enter a target date.");
+      return;
+    }
+
+    const newGoals = [...goals];
+    
+    if (selectedGoalIndex !== null) {
+      newGoals[selectedGoalIndex] = goalData;
+    } else {
+      newGoals.push(goalData);
+    }
+
+    setGoals(newGoals);
+    localStorage.setItem("financialGoals", JSON.stringify(newGoals));
+
+    setFormData({
+      name: '',
+      targetAmount: '',
+      currentAmount: '',
+      targetDate: ''
+    });
+    setSelectedGoalIndex(null);
+  };
+
+  const handleDeleteGoal = () => {
+    if (selectedGoalIndex === null) return;
+
+    if (window.confirm("Are you sure you want to delete this goal?")) {
+      const newGoals = [...goals];
+      newGoals.splice(selectedGoalIndex, 1);
+      
+      setGoals(newGoals);
+      localStorage.setItem("financialGoals", JSON.stringify(newGoals));
+
+      setFormData({
+        name: '',
+        targetAmount: '',
+        currentAmount: '',
+        targetDate: ''
+      });
+      setSelectedGoalIndex(null);
+    }
+  };
+
+  return (
+    <div id="goals-section" className="finances-content">
+      <h3 className="mb-4 text-primary">Financial Goals</h3>
+      
+      <div className="row g-4">
+        <div className="col-md-6">
+          <div className="card h-100">
+            <div className="card-header">Your Goals</div>
+            <div className="card-body">
+              <div className="list-group">
+                {goals.length === 0 ? (
+                  <div className="list-group-item text-center text-muted">No financial goals added yet.</div>
+                ) : (
+                  goals.map((goal, index) => {
+                    const progress = Math.round((goal.currentAmount / goal.targetAmount) * 100) || 0;
+                    
+                    return (
+                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectGoal(index); }}>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div>
+                            <h6 className="mb-0">{goal.name}</h6>
+                            <small className="text-muted">Target: ${goal.targetAmount} by {formatDate(goal.targetDate)}</small>
+                          </div>
+                          <span>{progress}%</span>
+                        </div>
+                        <div className="progress mt-2" style={{ height: "6px" }}>
+                          <div className="progress-bar bg-primary" role="progressbar" style={{ width: `${progress}%` }} aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </a>
+                    );
+                  })
+                )}
+              </div>
+              <button className="btn btn-primary mt-3 w-100" onClick={handleAddGoal}>Add Goal</button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-md-6">
+          <div className="card h-100">
+            <div className="card-header">Goal Details</div>
+            <div className="card-body">
+              <form onSubmit={handleSaveGoal}>
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">Goal Name</label>
+                  <input id="name" autoComplete='off' type="text" className="form-control" placeholder="e.g., Emergency Fund, Vacation, New Car" value={formData.name} onChange={handleInputChange} />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="targetAmount" className="form-label">Target Amount</label>
+                  <div className="input-group">
+                    <span className="input-group-text">$</span>
+                    <input id="targetAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.targetAmount} onChange={handleInputChange} />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="currentAmount" className="form-label">Current Amount</label>
+                  <div className="input-group">
+                    <span className="input-group-text">$</span>
+                    <input id="currentAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentAmount} onChange={handleInputChange} />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="targetDate" className="form-label">Target Date</label>
+                  <input id="targetDate" type="date" className="form-control" value={formData.targetDate} onChange={handleInputChange} />
+                </div>
+                <div className="d-flex justify-content-between">
+                  <button type="submit" className="btn btn-primary">Save Goal</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteGoal} disabled={selectedGoalIndex === null}>Delete</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Goals;
