@@ -1,0 +1,117 @@
+*{
+    box-sizing: border-box;
+    
+
+;}
+body {
+    margin: 0;
+    overflow-x: hidden;
+  }
+  
+#SelectCompanyContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    background-color: white;
+    padding: 10px;
+    
+}
+#SelectCompanyContainer select{
+    margin: 0px 10px;
+    background-color:#2962FF;
+    border: black solid .1px;
+    border-radius: 4px;
+    color: white;
+    padding: 10px;
+}
+#SelectCompanyContainer option{
+    background-color: white;
+    color: #2962FF;
+}
+#CreditCards{
+    margin: 0;
+    width: 100%;
+  
+    height: 100%;
+    
+}
+.creditCard{
+    width: 100%;
+    margin: 10px;  
+}
+.creditCard:hover{
+    box-shadow: 0 4px 8px 0 gray;
+    transform: translateY(-5px);
+    
+
+}
+.creditCard:hover .benefitsContainer{
+    
+    color: black;
+}
+.creditCardContent {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    width: auto; 
+  }
+  
+  
+.creditCardNameContainer{
+    height: 2%;
+    text-align: center;
+    
+    
+    
+
+}
+.creditCardCompanyContainer{
+    height: 5%;
+    font-weight: bold;
+    color: #2962FF;
+    text-align: center;
+    
+}
+.benefitsContainer {
+    flex-grow: 1;
+    overflow: auto;
+    font-size: small;
+    color: gray;
+    margin-top: 5px;
+  }
+  
+
+.imageContainer{      
+    padding: 10px;
+    display: grid;
+    align-items: end;    
+}
+.imageContainer img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+  }
+  
+
+  .card {
+    width: 375px;
+    height: 650px;
+    display: flex;
+    padding: 5px;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 8px 0 gray;
+    transition: 0.3s;
+    border-radius: 5px;
+    margin: 10px auto;
+  }
+  
+.card:hover{
+    box-shadow: 0 8px 16px 0 gray;
+}
+.container{
+    
+    align-content: center;
+
+}

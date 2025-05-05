@@ -7,6 +7,7 @@ import App from 'pages/App'
 import RootLayout from 'pages/RootLayout'
 import Dashboard from 'pages/Dashboard'
 import Settings from 'pages/Settings'
+import CreditCards from 'pages/CreditCards'
 import Authors from 'pages/Authors'
 import Editor from 'pages/Editor'
 
@@ -14,8 +15,8 @@ const router = createBrowserRouter(
   createRoutesFromElements((
     <Route path='/' element={<RootLayout />}>
       <Route path='/' element={<App />} />
+      {<Route path='/creditcards' element={<CreditCards />}/>}
       {<Route path='/authors' element={<Authors />}/>}
-      {/* <Route path='/creditcards' element={<CreditCards />}/> */}
       <Route path='/dashboard' element={<Dashboard />} />
       {/* <Route path='/demo' element={<Demo />}/> */}
       <Route path='/editor' element={<Editor />}/>
