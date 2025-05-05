@@ -7,6 +7,7 @@ import App from 'pages/App'
 import RootLayout from 'pages/RootLayout'
 import Dashboard from 'pages/Dashboard'
 import Settings from 'pages/Settings'
+import CreditCards from 'pages/CreditCards'
 
 
 const router = createBrowserRouter(
