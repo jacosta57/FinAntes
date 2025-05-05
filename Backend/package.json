@@ -1,15 +1,16 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend files for FinAntes",
-  "license": "ISC",
-  "author": "Jayson Acosta and Zaid Rachman",
-  "type": "commonjs",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "keywords": [],
+  "author": "Jayson Acosta and Zaid Rachman",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
