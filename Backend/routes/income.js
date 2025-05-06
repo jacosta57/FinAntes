@@ -1,6 +1,8 @@
 const express = require('express');
-const router = express.Router();
 const { client, db } = require('../utils/db');
+const { ObjectId } = require('mongodb');
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
     try {
@@ -37,5 +39,44 @@ router.get("/", async (req, res) => {
       await client.close();
     }
 });
+
+router.put("/:id", async (req, res) => {
+  try {
+    await client.connect();
+    const updateDoc = await db.collection("income").findOne({ _id: new ObjectId(req.params.id), userID: req.user.userID })
+    if (!updateDoc) { return res.status(404).send("income source not found") }
+
+    for (const [key, value] of Object.entries(req.body)) { updateDoc[key] = value }
+
+    const result = await db.collection("income").updateOne({ _id: new ObjectId(req.params.id), userID: req.user.userID }, { $set: updateDoc });
+
+    if (result.modifiedCount === 0 && result.acknowledged) { return res.status(304).send("income source not changed") }
+    else if (result.modifiedCount === 0) { return res.status(404).send("income source not found") }
+
+    res.status(200);
+    res.send(result);
+  } catch (error) {
+    console.error("Error updating income source: " + error);
+    res.status(500).send(error);
+  } finally {
+    await client.close();
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    await client.connect();
+    const result = await db.collection('income').deleteOne({_id: new ObjectId(req.params.id), userID: req.user.userID})
+
+    if(result.deletedCount === 0){ return res.status(404).send("Income source not found")}
+    res.status(200).send(result)
+
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Internal server error: " + error)
+  } finally {
+    await client.close();
+  }
+})
 
 module.exports = router;
