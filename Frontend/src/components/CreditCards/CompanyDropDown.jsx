@@ -1,5 +1,5 @@
 
-import '../../assets/creditCard-styles.css';
+import '../../assets/creditcard-styles.module.css';
 function CreditCardDropDownMenu({selectedCompany, setSelectedCompany}){
     const handleChange = (e) => {
         setSelectedCompany(e.target.value);

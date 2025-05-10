@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import '../../assets/creditCard-styles.css';
+import '../../assets/creditcard-styles.module.css';
 function CreditCardList({selectedCompany, setSelectedCompany}){
     const testData = [
         {
