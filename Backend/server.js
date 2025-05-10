@@ -1,13 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 const { authenticateAccessToken } = require('./utils/jwt')
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({origin: 'http://localhost:5173', credentials: true}));
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 // Import routes
 const authRoutes = require('./routes/auth');

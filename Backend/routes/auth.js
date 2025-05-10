@@ -1,9 +1,9 @@
-const express = require('express');
-const { client, db } = require('../utils/db');
-const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { generateAccessToken, generateRefreshToken, authenticateAccessToken, authenticateRefreshToken } = require('../utils/jwt.js')
+const express = require("express");
+const { client, db } = require("../utils/db");
+const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { generateAccessToken, generateRefreshToken, authenticateAccessToken, authenticateRefreshToken } = require("../utils/jwt.js");
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.post("/register", async (req, res) => {
   try {
     await client.connect();
     const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const newDocument = {
       userID: uuidv4(),
@@ -21,9 +21,44 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
       phone: String(req.body.phone),
       theme: "light",
-      color: "blue"
+      color: "blue",
     };
+    const userForToken = {
+      userID: newDocument.userID,
+      email: newDocument.email,
+    };
+    const accessToken = generateAccessToken(userForToken);
+    const refreshToken = generateRefreshToken(userForToken);
+
+    const createdAt = new Date();
+    const expiresAt = new Date(
+      Date.now() +
+        parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000
+    );
+
+    const refreshTokenObject = {
+      token: refreshToken,
+      createdAt: createdAt,
+      expiresAt: expiresAt,
+    };
+
+    newDocument.refreshToken = refreshTokenObject;
+
     const result = await db.collection("users").insertOne(newDocument);
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge:
+        parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000,
+    });
+
     res.status(200);
     res.send(result);
   } catch (error) {
@@ -31,9 +66,11 @@ router.post("/register", async (req, res) => {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(409).send({
         success: false,
-        message: `An account with the ${field === 'phone' ? 'phone number' : field} already exists`,
-        field: field
-      })
+        message: `An account with the ${
+          field === "phone" ? "phone number" : field
+        } already exists`,
+        field: field,
+      });
     }
     console.error("Could not add the new User: " + error);
     res.status(500).send("Error adding new User");
@@ -52,25 +89,55 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("User not found");
     }
     try {
-      const correctPassword = await bcrypt.compare(req.body.password, user.password);
+      const correctPassword = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
       if (correctPassword) {
-        const userForToken = { userID: user.userID, email: user.email }
-        const accessToken = generateAccessToken(userForToken)
-        const refreshToken = generateRefreshToken(userForToken)
+        const userForToken = { userID: user.userID, email: user.email };
+        const accessToken = generateAccessToken(userForToken);
+        const refreshToken = generateRefreshToken(userForToken);
 
         const createdAt = new Date();
-        const expiresAt = new Date(Date.now() + (parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000))
+        const expiresAt = new Date(
+          Date.now() +
+            parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000
+        );
 
-        const refreshTokenObject = { token: refreshToken, createdAt: createdAt, expiresAt: expiresAt }
+        const refreshTokenObject = {
+          token: refreshToken,
+          createdAt: createdAt,
+          expiresAt: expiresAt,
+        };
 
-        await db.collection('users').updateOne({ userID: user.userID }, { $set: { refreshToken: refreshTokenObject } })
+        await db
+          .collection("users")
+          .updateOne(
+            { userID: user.userID },
+            { $set: { refreshToken: refreshTokenObject } }
+          );
 
-        return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken })
+        res.cookie("accessToken", accessToken, {
+          httpOnly: true,
+          sameSite: "strict",
+          maxAge: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) * 60 * 1000,
+        });
+
+        res.cookie("refreshToken", accessToken, {
+          httpOnly: true,
+          sameSite: "strict",
+          maxAge:
+            parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000,
+        });
+
+        return res
+          .status(200)
+          .send({ success: true, message: "Login successful" });
       }
       res.status(401).send("Incorrect password");
     } catch (error) {
-      console.error(error)
-      res.status(500).send("internal server error")
+      console.error(error);
+      res.status(500).send("internal server error");
     }
   } catch (error) {
     console.error("Could not login: " + error);
@@ -78,16 +145,28 @@ router.post("/login", async (req, res) => {
   } finally {
     await client.close();
   }
-})
+});
 
 router.post("/logout", async (req, res) => {
   try {
-    const refreshToken = req.body.token;
-    if (!refreshToken) { return res.status(400).send("Refresh token required") }
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(400).send("Refresh token required");
+    }
     await client.connect();
 
-    const result = await db.collection("users").updateOne({ "refreshToken.token": refreshToken }, { $set: { refreshToken: null } });
-    if (result.modifiedCount === 0) { return res.status(404).send("Token not found") }
+    const result = await db
+      .collection("users")
+      .updateOne(
+        { "refreshToken.token": refreshToken },
+        { $set: { refreshToken: null } }
+      );
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("Token not found");
+    }
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
 
     res.status(200).send("Logged out successfully");
   } catch (error) {
@@ -101,11 +180,15 @@ router.post("/logout", async (req, res) => {
 router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
   try {
     const userForToken = { userID: req.user.userID, email: req.user.email };
-    console.log(userForToken)
     const accessToken = generateAccessToken(userForToken);
 
-    return res.status(200).send({ accessToken: accessToken });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) * 60 * 1000,
+    });
 
+    return res.status(200).send({ accessToken: accessToken });
   } catch (error) {
     console.error("Error refreshing token: " + error);
     res.status(500).send("Internal server error");
@@ -116,15 +199,20 @@ router.get("/verify", authenticateAccessToken, async (req, res) => {
   try {
     await client.connect();
 
-    const user = await db.collection("users").findOne({ userID: req.user.userID }, { projection: { password: 0, refreshToken: 0, _id: 0 } });
+    const user = await db
+      .collection("users")
+      .findOne(
+        { userID: req.user.userID },
+        { projection: { password: 0, refreshToken: 0, _id: 0 } }
+      );
 
-    if (!user) { return res.status(404).send({ valid: false, message: "User not found" }) }
+    if (!user) {
+      return res.status(404).send({ valid: false, message: "User not found" });
+    }
     res.status(200).send({ valid: true, user: user });
-
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(500).send({ valid: false, message: "Internal server error" });
-
   } finally {
     await client.close();
   }
