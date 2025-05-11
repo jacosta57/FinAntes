@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Appearance from 'Settings/Appearance';
 import Profile from 'Settings/Profile';
 import Preferences from 'Settings/Preferences';
 import Logout from 'components/Settings/Logout';
+import Tiers from './Tiers';
 
 function Settings() {
     const [activeTab, setActiveTab] = useState('appearance')
 
-    const onClickHandler = (e) => {
-        setActiveTab(e.target.dataset.tab)
-    }
+    const onClickHandler = (e) => { setActiveTab(e.target.dataset.tab) }
 
     return (
         <div className="container-fluid">
@@ -19,6 +18,7 @@ function Settings() {
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'appearance' ? 'active' : '')} data-tab="appearance" onClick={onClickHandler}>Appearance</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'profile' ? 'active' : '')} data-tab="profile" onClick={onClickHandler}>Profile</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'preferences' ? 'active' : '')} data-tab="preferences" onClick={onClickHandler}>Preferences</a>
+                        <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'tiers' ? 'active' : '')} data-tab="tiers" onClick={onClickHandler}>Tiers</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'logout' ? 'active' : '')} data-tab="logout" onClick={onClickHandler}>Logout</a>
                     </div>
                 </div>
@@ -26,6 +26,7 @@ function Settings() {
                 {activeTab === 'appearance' && <Appearance />}
                 {activeTab === 'profile' && <Profile />}
                 {activeTab === 'preferences' && <Preferences />}
+                {activeTab === 'tiers' && <Tiers />}
                 {activeTab === 'logout' && <Logout />}
 
             </div>
