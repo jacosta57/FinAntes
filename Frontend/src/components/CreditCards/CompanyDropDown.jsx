@@ -1,5 +1,5 @@
 
-import '../../assets/creditcard-styles.module.css';
+import styles from '../../assets/creditcard-styles.module.css';
 function CreditCardDropDownMenu({selectedCompany, setSelectedCompany}){
     const handleChange = (e) => {
         setSelectedCompany(e.target.value);
@@ -7,8 +7,8 @@ function CreditCardDropDownMenu({selectedCompany, setSelectedCompany}){
     };
     return(
         /* Will be changed when database is connected */
-        <div id="SelectCompanyContainer">
-            <select id="dropdown" value={selectedCompany} onChange={handleChange}>
+        <div className={styles.selectCompanyContainer}>
+            <select className={styles.dropdown} value={selectedCompany} onChange={handleChange}>
             <option value="">All Companies</option>
             <option value="Chase">Chase</option>
             <option value="American Express">American Express</option>
