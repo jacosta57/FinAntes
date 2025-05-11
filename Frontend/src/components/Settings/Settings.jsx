@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Appearance from './Appearance';
 import Profile from './Profile';
 import Preferences from './Preferences';
+import Tiers from './Tiers';
 
 function Settings() {
 
@@ -19,12 +20,14 @@ function Settings() {
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'appearance' ? 'active' : '')} data-tab="appearance" onClick={onClickHandler}>Appearance</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'profile' ? 'active' : '')} data-tab="profile" onClick={onClickHandler}>Profile</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'preferences' ? 'active' : '')} data-tab="preferences" onClick={onClickHandler}>Preferences</a>
+                        <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'tiers' ? 'active' : '')} data-tab="tiers" onClick={onClickHandler}>Tiers</a>
                     </div>
                 </div>
 
                 {activeTab === 'appearance' && <Appearance /> }
                 {activeTab === 'profile' && <Profile /> }
                 {activeTab === 'preferences' && <Preferences /> }
+                {activeTab === 'tiers' && <Tiers /> }
 
             </div>
         </div>
