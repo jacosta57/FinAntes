@@ -1,22 +1,20 @@
 *{
     box-sizing: border-box;
-    
-
 ;}
 body {
     margin: 0;
     overflow-x: hidden;
   }
   
-#SelectCompanyContainer{
+/* Drop Down styles*/
+.selectCompanyContainer{
     display: flex;
     flex-direction: row;
     justify-content: right;
     background-color: white;
     padding: 10px;
-    
 }
-#SelectCompanyContainer select{
+.selectCompanyContainer select{
     margin: 0px 10px;
     background-color:#2962FF;
     border: black solid .1px;
@@ -24,31 +22,14 @@ body {
     color: white;
     padding: 10px;
 }
-#SelectCompanyContainer option{
+.selectCompanyContainer option{
     background-color: white;
     color: #2962FF;
 }
-#CreditCards{
-    margin: 0;
-    width: 100%;
-  
-    height: 100%;
-    
-}
-.creditCard{
-    width: 100%;
-    margin: 10px;  
-}
-.creditCard:hover{
-    box-shadow: 0 4px 8px 0 gray;
-    transform: translateY(-5px);
-    
 
-}
-.creditCard:hover .benefitsContainer{
-    
-    color: black;
-}
+/* Credit Card styles */
+
+
 .creditCardContent {
     display: flex;
     justify-content: center;
@@ -61,17 +42,12 @@ body {
 .creditCardNameContainer{
     height: 2%;
     text-align: center;
-    
-    
-    
-
 }
 .creditCardCompanyContainer{
     height: 5%;
     font-weight: bold;
     color: #2962FF;
     text-align: center;
-    
 }
 .benefitsContainer {
     flex-grow: 1;
@@ -93,7 +69,6 @@ body {
     object-fit: contain;
   }
   
-
   .card {
     width: 375px;
     height: 650px;
@@ -111,7 +86,5 @@ body {
     box-shadow: 0 8px 16px 0 gray;
 }
 .container{
-    
     align-content: center;
-
 }
