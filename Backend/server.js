@@ -4,10 +4,11 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 const { authenticateAccessToken } = require('./utils/jwt')
+const { connectDB, closeDB } = require('./utils/db');
 require('dotenv').config();
 
 const app = express();
-app.use(cors({origin: 'http://localhost:5173', credentials: true}));
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json())
 app.use(cookieParser())
 
@@ -29,8 +30,11 @@ app.use('/api/income', authenticateAccessToken, incomeRoutes);
 app.use('/api/investments', authenticateAccessToken, investmentsRoutes);
 app.use('/api/regular-expenses', authenticateAccessToken, regularExpensesRoutes);
 app.use('/api/upcoming-expenses', authenticateAccessToken, upcomingExpensesRoutes);
-app.use('/api/user', authenticateAccessToken, userRoutes)
+app.use('/api/user', authenticateAccessToken, userRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`);
+connectDB().then(() => {
+  app.listen(process.env.PORT, () => { console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`); });
+}).catch(err => {
+  console.error('Failed to connect to MongoDB:', err);
+  process.exit(1);
 });

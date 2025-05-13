@@ -12,7 +12,7 @@ function Logout() {
     try {
       const success = await logout();
       if (success) {
-        navigate('/');
+        window.location.href = '/auth?tab=login';
         return;
       }
       throw new Error()

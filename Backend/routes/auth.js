@@ -1,5 +1,5 @@
 const express = require("express");
-const { client, db } = require("../utils/db");
+const { getDB } = require('../utils/db');
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
@@ -56,8 +56,7 @@ router.post("/register", async (req, res) => {
         parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200);
-    res.send(result);
+    res.status(200).send(result);
   } catch (error) {
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
@@ -68,15 +67,13 @@ router.post("/register", async (req, res) => {
     }
     console.error("Could not add the new User: " + error);
     res.status(500).send("Error adding new User");
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.post("/login", async (req, res) => {
   console.log('Login Route Started')
   try {
-    await client.connect();
+    const db = getDB();
     const query = { email: req.body.email.toLowerCase() };
     const user = await db.collection("users").findOne(query);
 
@@ -124,9 +121,7 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.error("Could not login: " + error);
     res.status(500).send("Error Logging in");
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.post("/logout", async (req, res) => {
@@ -134,7 +129,7 @@ router.post("/logout", async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) { return res.status(400).send("Refresh token required") }
-    await client.connect();
+    const db = getDB();
 
     const result = await db.collection("users").updateOne({ "refreshToken.token": refreshToken }, { $set: { refreshToken: null } });
     if (result.modifiedCount === 0) { return res.status(404).send("Token not found") }
@@ -146,9 +141,7 @@ router.post("/logout", async (req, res) => {
   } catch (error) {
     console.error("Error logging out: " + error);
     res.status(500).send("Internal server error");
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
@@ -171,7 +164,7 @@ router.post("/refresh-token", authenticateRefreshToken, async (req, res) => {
 
 router.get("/verify", authenticateAccessToken, async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
 
     const user = await db
       .collection("users")
@@ -187,9 +180,7 @@ router.get("/verify", authenticateAccessToken, async (req, res) => {
   } catch (error) {
     console.error("Error verifying token:", error);
     res.status(500).send({ valid: false, message: "Internal server error" });
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 module.exports = router;

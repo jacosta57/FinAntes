@@ -1,25 +1,48 @@
 import { useState, useEffect } from 'react'
+import { useData } from 'DataContext'
 
 function Appearance() {
-    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-    const [color, setColorScheme] = useState(localStorage.getItem("color") || "blue");
+    const { userProfile, updateUserProfile, loading } = useData();
+    const [saving, setSaving] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState(userProfile?.theme || 'light');
+    const [currentColor, setCurrentColor] = useState(userProfile?.color || 'blue');
 
     useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        document.documentElement.setAttribute("data-color", color);
-    }, [theme, color]);
+        if (userProfile) {
+            setCurrentTheme(userProfile.theme || 'light');
+            setCurrentColor(userProfile.color || 'blue');
+        }
+    }, [userProfile]);
 
-    function changeTheme(e) {
+    async function changeTheme(e) {
         const newTheme = e.target.value;
-        setTheme(newTheme);
-        localStorage.setItem("theme", newTheme);
+        setCurrentTheme(newTheme);
+        setSaving(true);
+        try {
+            await updateUserProfile({ ...userProfile, theme: newTheme });
+        } catch (error) {
+            alert('Error updating theme: ' + error.message);
+            setCurrentTheme(userProfile.theme);
+        } finally {
+            setSaving(false);
+        }
     }
 
-    function changeColor(e) {
-        const newColorScheme = e.target.value;
-        setColorScheme(newColorScheme);
-        localStorage.setItem("color", newColorScheme);
+    async function changeColor(e) {
+        const newColor = e.target.value;
+        setCurrentColor(newColor);
+        setSaving(true);
+        try {
+            await updateUserProfile({ ...userProfile, color: newColor });
+        } catch (error) {
+            alert('Error updating color: ' + error.message);
+            setCurrentColor(userProfile.color);
+        } finally {
+            setSaving(false);
+        }
     }
+
+    if (loading) return <div className="text-center py-4">Loading preferences...</div>;
 
     return (
         <div className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4 settings-content">
@@ -30,10 +53,10 @@ function Appearance() {
                 <div className="card-body">
                     <div className="btn-group" role="group">
                         <div className="btn-group" role="group">
-                            <input type="radio" className="btn-check" name="theme" id="lightMode" value="light" checked={theme === 'light'} onChange={changeTheme} />
+                            <input type="radio" className="btn-check" name="theme" id="lightMode" value="light" checked={currentTheme === 'light'} onChange={changeTheme} disabled={saving} />
                             <label className="btn btn-outline-primary" htmlFor="lightMode">Light</label>
 
-                            <input type="radio" className="btn-check" name="theme" id="darkMode" value="dark" checked={theme === 'dark'} onChange={changeTheme} />
+                            <input type="radio" className="btn-check" name="theme" id="darkMode" value="dark" checked={currentTheme === 'dark'} onChange={changeTheme} disabled={saving} />
                             <label className="btn btn-outline-primary" htmlFor="darkMode">Dark</label>
                         </div>
 
@@ -46,42 +69,42 @@ function Appearance() {
                 <div className="card-body">
                     <div className="d-flex gap-3 flex-wrap">
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="blueScheme" value='blue' checked={color === 'blue'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="blueScheme" value='blue' checked={currentColor === 'blue'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="blueScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#2962FF' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="greenScheme" value='green' checked={color === 'green'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="greenScheme" value='green' checked={currentColor === 'green'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="greenScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00C853' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="purpleScheme" value='purple' checked={color === 'purple'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="purpleScheme" value='purple' checked={currentColor === 'purple'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="purpleScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#6200EA' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="orangeScheme" value='orange' checked={color === 'orange'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="orangeScheme" value='orange' checked={currentColor === 'orange'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="orangeScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#FF6D00' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="tealScheme" value='teal' checked={color === 'teal'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="tealScheme" value='teal' checked={currentColor === 'teal'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="tealScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#00BFA5' }}></div>
                             </label>
                         </div>
 
                         <div className="form-check">
-                            <input className="form-check-input" type="radio" name="color" id="redScheme" value='red' checked={color === 'red'} onChange={changeColor} />
+                            <input className="form-check-input" type="radio" name="color" id="redScheme" value='red' checked={currentColor === 'red'} onChange={changeColor} disabled={saving} />
                             <label className="form-check-label" htmlFor="redScheme">
                                 <div className="color-swatch rounded-circle" style={{ width: 30 + 'px', height: 30 + 'px', backgroundColor: '#D50000' }}></div>
                             </label>

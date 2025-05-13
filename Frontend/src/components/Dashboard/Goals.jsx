@@ -1,5 +1,11 @@
+import { useData } from 'DataContext';
+
 function Goals() {
-    const financialGoals = JSON.parse(localStorage.getItem("financialGoals")) || [];
+    const { financialGoals, loading, error } = useData();
+
+    if (loading) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Loading...</div></div></div>;
+    if (error) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center"><div className="text-center"><p className="text-danger">Error loading goals data</p><small className="text-muted">{error}</small></div></div></div></div>;
+
     let goalsElement = <p className="text-center text-muted mb-3">No financial goals added yet.</p>
 
     return (
@@ -16,18 +22,30 @@ function Goals() {
                         const today = new Date();
                         const timeRemaining = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
 
+                        const monthsRemaining = Math.max(0,
+                            (targetDate.getFullYear() - today.getFullYear()) * 12 +
+                            (targetDate.getMonth() - today.getMonth())
+                        );
+                        const amountNeeded = goal.targetAmount - goal.currentAmount;
+                        const monthlyContribution = monthsRemaining > 0 ?
+                            (amountNeeded / monthsRemaining).toFixed(2) : 0;
+
                         return (
-                            <div className='mb-3' key={index}>
+                            <div className='mb-3' key={goal._id || index}>
                                 <div className="d-flex justify-content-between mb-1">
                                     <span>{goal.name}</span>
                                     <span>${goal.currentAmount.toLocaleString()} / ${goal.targetAmount.toLocaleString()}</span>
                                 </div>
                                 <div className="progress">
-                                    <div className="progress-bar" role="progressbar" style={{ width: progressPercent + "%" }}
-                                        aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">{progressPercent}%</div>
+                                    <div className="progress-bar" role="progressbar" style={{ width: progressPercent + "%" }} aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">{progressPercent}%</div>
                                 </div>
-                                <div className="text-end mt-1">
-                                    <small>{timeRemaining > 0 ? timeRemaining + ' days remaining' : 'Target date passed'}</small>
+                                <div className="d-flex justify-content-between mt-1">
+                                    <small className="text-muted">
+                                        {monthlyContribution > 0 ? `$${monthlyContribution}/month needed` : 'Goal reached!'}
+                                    </small>
+                                    <small className="text-muted">
+                                        {timeRemaining > 0 ? timeRemaining + ' days remaining' : 'Target date passed'}
+                                    </small>
                                 </div>
                             </div>
                         );

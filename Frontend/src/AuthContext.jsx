@@ -25,8 +25,20 @@ export function AuthProvider({ children }) {
       setUser(response.data.user);
       setJustLoggedOut(false);
     } catch (error) {
-      if (error.response?.status !== 401) { console.error('Auth check failed:', error) }
-      setUser(null);
+      if (error.response?.status === 401) {
+        try {
+          await refreshToken();
+          const response = await axios.get('/api/auth/verify');
+          setUser(response.data.user);
+          setJustLoggedOut(false);
+        } catch (refreshError) {
+          console.error('Auth check and refresh failed:', refreshError);
+          setUser(null);
+        }
+      } else {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -38,7 +50,7 @@ export function AuthProvider({ children }) {
       return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      setUser(null);
+      if (error.response?.status === 401) { setUser(null) }
       return false;
     }
   };
@@ -71,7 +83,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook to use auth context
 export function useAuth() {
   return useContext(AuthContext);
 }

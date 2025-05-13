@@ -1,12 +1,12 @@
 const express = require('express');
-const { client, db } = require('../utils/db');
+const { getDB } = require('../utils/db');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
     const user = await db.collection("users").findOne({ userID: req.user.userID }, { projection: { password: 0, refreshToken: 0 } });
 
     if (!user) { return res.status(404).send("User not found"); }
@@ -15,35 +15,30 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error("Could not find user: " + error);
     res.status(500).send("Error finding user");
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.put("/update", async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
     const updateDoc = await db.collection("users").findOne({ userID: req.user.userID }, { projection: { password: 0, refreshToken: 0, _id: 0 } })
     if (!updateDoc) { return res.status(404).send("user not found") }
     for (const [key, value] of Object.entries(req.body)) {
       if (key !== 'password' && key !== 'email') { updateDoc[key] = value }
     }
-    const result = await db.collection("users").updateOne({ userID: req.user.userID }, { $set: updateDoc });
+    const result = await db.collection("users").updateOne({ userID: req.user.userID }, { $set: updateDoc }, { returnDocument: 'after' });
     if (result.modifiedCount === 0 && result.acknowledged) { return res.status(304).send("user not changed") }
     else if (result.modifiedCount === 0) { return res.status(404).send("user not found") }
-    res.status(200);
-    res.send(result);
+    res.status(200).send(updateDoc);
   } catch (error) {
     console.error("Error updating user: " + error);
     res.status(500).send(error);
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.put("/password", async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
 
     const user = await db.collection("users").findOne({ userID: req.user.userID });
     if (!user) { return res.status(404).send("User not found") }
@@ -62,15 +57,12 @@ router.put("/password", async (req, res) => {
   } catch (error) {
     console.error("Error updating password: " + error);
     res.status(500).send("Error updating password");
-
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 router.put("/email", async (req, res) => {
   try {
-    await client.connect();
+    const db = getDB();
 
     const user = await db.collection("users").findOne({ userID: req.user.userID });
     if (!user) { return res.status(404).send("User not found") }
@@ -96,9 +88,7 @@ router.put("/email", async (req, res) => {
     console.error("Error updating email: " + error);
     res.status(500).send("Error updating email");
 
-  } finally {
-    await client.close();
-  }
+  } 
 });
 
 module.exports = router;

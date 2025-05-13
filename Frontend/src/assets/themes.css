@@ -468,3 +468,8 @@ span[class="input-group-text"] {
   background-color: var(--accent-color);
   border-color: var(--accent-color);
 }
+
+canvas {
+  max-width: 350px;
+  max-height: 350px;
+}

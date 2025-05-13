@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { useData } from 'DataContext';
 
 function CashFlow() {
-  const [incomeSources, setIncomeSources] = useState([]);
-  const [regularExpenses, setRegularExpenses] = useState([]);
+  const { incomeSources, regularExpenses, addIncome, updateIncome, deleteIncome, addRegularExpense, updateRegularExpense, deleteRegularExpense, loading } = useData();
   const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [selectedIncomeIndex, setSelectedIncomeIndex] = useState(null);
   const [selectedExpenseIndex, setSelectedExpenseIndex] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [incomeForm, setIncomeForm] = useState({
     name: '',
     amount: '',
@@ -23,13 +24,6 @@ function CashFlow() {
     totalExpenses: 0,
     netCashFlow: 0
   });
-
-  useEffect(() => {
-    const loadedIncomeSources = JSON.parse(localStorage.getItem("incomeSources") || "[]");
-    const loadedRegularExpenses = JSON.parse(localStorage.getItem("regularExpenses") || "[]");
-    setIncomeSources(loadedIncomeSources);
-    setRegularExpenses(loadedRegularExpenses);
-  }, []);
 
   useEffect(() => {
     updateCashFlowSummary();
@@ -98,7 +92,7 @@ function CashFlow() {
     });
   };
 
-  const handleSaveIncome = () => {
+  const handleSaveIncome = async () => {
     const { name, amount, frequency } = incomeForm;
     
     if (!name) {
@@ -111,26 +105,32 @@ function CashFlow() {
       return;
     }
     
-    const newSources = [...incomeSources];
-    
-    if (selectedIncomeIndex !== null) {
-      newSources[selectedIncomeIndex] = { name, amount: parseFloat(amount), frequency };
-    } else {
-      newSources.push({ name, amount: parseFloat(amount), frequency });
+    setSaving(true);
+    try {
+      if (selectedIncomeIndex !== null) {
+        await updateIncome(incomeSources[selectedIncomeIndex]._id, { name, amount: parseFloat(amount), frequency });
+      } else {
+        await addIncome({ name, amount: parseFloat(amount), frequency });
+      }
+      setShowIncomeModal(false);
+    } catch (error) {
+      alert('Error saving income: ' + error.message);
+    } finally {
+      setSaving(false);
     }
-    
-    setIncomeSources(newSources);
-    localStorage.setItem('incomeSources', JSON.stringify(newSources));
-    setShowIncomeModal(false);
   };
 
-  const handleDeleteIncome = () => {
+  const handleDeleteIncome = async () => {
     if (window.confirm('Are you sure you want to delete this income source?')) {
-      const newSources = [...incomeSources];
-      newSources.splice(selectedIncomeIndex, 1);
-      setIncomeSources(newSources);
-      localStorage.setItem('incomeSources', JSON.stringify(newSources));
-      setShowIncomeModal(false);
+      setSaving(true);
+      try {
+        await deleteIncome(incomeSources[selectedIncomeIndex]._id);
+        setShowIncomeModal(false);
+      } catch (error) {
+        alert('Error deleting income: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
@@ -163,7 +163,7 @@ function CashFlow() {
     });
   };
 
-  const handleSaveExpense = () => {
+  const handleSaveExpense = async () => {
     const { name, amount, frequency } = expenseForm;
     
     if (!name) {
@@ -176,28 +176,36 @@ function CashFlow() {
       return;
     }
     
-    const newExpenses = [...regularExpenses];
-    
-    if (selectedExpenseIndex !== null) {
-      newExpenses[selectedExpenseIndex] = { name, amount: parseFloat(amount), frequency };
-    } else {
-      newExpenses.push({ name, amount: parseFloat(amount), frequency });
+    setSaving(true);
+    try {
+      if (selectedExpenseIndex !== null) {
+        await updateRegularExpense(regularExpenses[selectedExpenseIndex]._id, { name, amount: parseFloat(amount), frequency });
+      } else {
+        await addRegularExpense({ name, amount: parseFloat(amount), frequency });
+      }
+      setShowExpenseModal(false);
+    } catch (error) {
+      alert('Error saving expense: ' + error.message);
+    } finally {
+      setSaving(false);
     }
-    
-    setRegularExpenses(newExpenses);
-    localStorage.setItem('regularExpenses', JSON.stringify(newExpenses));
-    setShowExpenseModal(false);
   };
 
-  const handleDeleteExpense = () => {
+  const handleDeleteExpense = async () => {
     if (window.confirm('Are you sure you want to delete this expense?')) {
-      const newExpenses = [...regularExpenses];
-      newExpenses.splice(selectedExpenseIndex, 1);
-      setRegularExpenses(newExpenses);
-      localStorage.setItem('regularExpenses', JSON.stringify(newExpenses));
-      setShowExpenseModal(false);
+      setSaving(true);
+      try {
+        await deleteRegularExpense(regularExpenses[selectedExpenseIndex]._id);
+        setShowExpenseModal(false);
+      } catch (error) {
+        alert('Error deleting expense: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
     }
   };
+
+  if (loading) return <div className="text-center py-4">Loading cash flow data...</div>;
 
   return (
     <div id="cashflow-section" className="finances-content">
@@ -213,7 +221,7 @@ function CashFlow() {
                   <div className="list-group-item text-center text-muted">No income sources added yet.</div>
                 ) : (
                   incomeSources.map((source, index) => (
-                    <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); handleIncomeClick(index); }}>
+                    <a href="#" className="list-group-item list-group-item-action" key={source._id} onClick={(e) => { e.preventDefault(); handleIncomeClick(index); }}>
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-0">{source.name}</h6>
@@ -239,7 +247,7 @@ function CashFlow() {
                   <div className="list-group-item text-center text-muted">No regular expenses added yet.</div>
                 ) : (
                   regularExpenses.map((expense, index) => (
-                    <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); handleExpenseClick(index); }}>
+                    <a href="#" className="list-group-item list-group-item-action" key={expense._id} onClick={(e) => { e.preventDefault(); handleExpenseClick(index); }}>
                       <div className="d-flex justify-content-between align-items-center">
                         <div>
                           <h6 className="mb-0">{expense.name}</h6>
@@ -316,8 +324,8 @@ function CashFlow() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowIncomeModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSaveIncome}>Save Income</Button>
-          {selectedIncomeIndex !== null && <Button variant="danger" onClick={handleDeleteIncome}>Delete</Button>}
+          <Button variant="primary" onClick={handleSaveIncome} disabled={saving}>{saving ? 'Saving...' : 'Save Income'}</Button>
+          {selectedIncomeIndex !== null && <Button variant="danger" onClick={handleDeleteIncome} disabled={saving}>Delete</Button>}
         </Modal.Footer>
       </Modal>
 
@@ -352,8 +360,8 @@ function CashFlow() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowExpenseModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSaveExpense}>Save Expense</Button>
-          {selectedExpenseIndex !== null && <Button variant="danger" onClick={handleDeleteExpense}>Delete</Button>}
+          <Button variant="primary" onClick={handleSaveExpense} disabled={saving}>{saving ? 'Saving...' : 'Save Expense'}</Button>
+          {selectedExpenseIndex !== null && <Button variant="danger" onClick={handleDeleteExpense} disabled={saving}>Delete</Button>}
         </Modal.Footer>
       </Modal>
     </div>

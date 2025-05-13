@@ -12,7 +12,8 @@ export default defineConfig({
       "Settings": "/src/components/Settings",
       "components": "/src/components/",
       "pages": "/src/pages",
-      "AuthContext": "/src/AuthContext"
+      "AuthContext": "/src/AuthContext",
+      "DataContext": "/src/DataContext"
     }
   }
 })

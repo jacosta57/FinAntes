@@ -1,10 +1,15 @@
+import { useData } from 'DataContext';
+
 function CashFlow() {
-    const incomeSources = JSON.parse(localStorage.getItem("incomeSources")) || [{ amount: 0 }];
+    const { incomeSources, regularExpenses, loading, error } = useData();
+
+    if (loading) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Loading...</div></div></div>;
+    if (error) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Error: {error}</div></div></div>;
+
     let totalIncome = 0;
     incomeSources.forEach(source => { totalIncome += source.amount });
     totalIncome = totalIncome.toFixed(2);
 
-    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [{ amount: 0 }];
     let totalExpenses = 0;
     regularExpenses.forEach(source => { totalExpenses += source.amount });
     totalExpenses = totalExpenses.toFixed(2);

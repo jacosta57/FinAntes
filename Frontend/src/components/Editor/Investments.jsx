@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useData } from 'DataContext';
 
 function Investments() {
-  const [investments, setInvestments] = useState([]);
+  const { investments, addInvestment, updateInvestment, deleteInvestment, loading } = useData();
   const [selectedInvestmentIndex, setSelectedInvestmentIndex] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     type: 'stock',
@@ -15,11 +17,6 @@ function Investments() {
     totalReturn: 0,
     totalReturnPercent: 0
   });
-
-  useEffect(() => {
-    const loadedInvestments = JSON.parse(localStorage.getItem("investments") || "[]");
-    setInvestments(loadedInvestments);
-  }, []);
 
   useEffect(() => {
     updatePortfolioSummary();
@@ -97,7 +94,7 @@ function Investments() {
     setSelectedInvestmentIndex(null);
   };
 
-  const handleSaveInvestment = (e) => {
+  const handleSaveInvestment = async (e) => {
     e.preventDefault();
 
     const investmentData = {
@@ -123,33 +120,39 @@ function Investments() {
       return;
     }
 
-    const newInvestments = [...investments];
+    setSaving(true);
+    try {
+      if (selectedInvestmentIndex !== null) {
+        await updateInvestment(investments[selectedInvestmentIndex]._id, investmentData);
+      } else {
+        await addInvestment(investmentData);
+      }
 
-    if (selectedInvestmentIndex !== null) {
-      newInvestments[selectedInvestmentIndex] = investmentData;
-    } else {
-      newInvestments.push(investmentData);
+      handleAddInvestment();
+    } catch (error) {
+      alert('Error saving investment: ' + error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setInvestments(newInvestments);
-    localStorage.setItem("investments", JSON.stringify(newInvestments));
-
-    handleAddInvestment();
   };
 
-  const handleDeleteInvestment = () => {
+  const handleDeleteInvestment = async () => {
     if (selectedInvestmentIndex === null) return;
 
     if (window.confirm("Are you sure you want to delete this investment?")) {
-      const newInvestments = [...investments];
-      newInvestments.splice(selectedInvestmentIndex, 1);
-
-      setInvestments(newInvestments);
-      localStorage.setItem("investments", JSON.stringify(newInvestments));
-
-      handleAddInvestment();
+      setSaving(true);
+      try {
+        await deleteInvestment(investments[selectedInvestmentIndex]._id);
+        handleAddInvestment();
+      } catch (error) {
+        alert('Error deleting investment: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
     }
   };
+
+  if (loading) return <div className="text-center py-4">Loading investment data...</div>;
 
   return (
     <>
@@ -216,7 +219,7 @@ function Investments() {
                     const returnClass = returnAmount >= 0 ? "text-success" : "text-danger";
 
                     return (
-                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectInvestment(index); }}>
+                      <a href="#" className="list-group-item list-group-item-action" key={investment._id} onClick={(e) => { e.preventDefault(); selectInvestment(index); }}>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{investment.name}</h6>
@@ -276,8 +279,8 @@ function Investments() {
                   </div>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary">Save Investment</button>
-                  <button type="button" className="btn btn-danger" onClick={handleDeleteInvestment} disabled={selectedInvestmentIndex === null}>Delete</button>
+                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Investment'}</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteInvestment} disabled={selectedInvestmentIndex === null || saving}>Delete</button>
                 </div>
               </form>
             </div>

@@ -14,10 +14,11 @@ import Authentication from 'pages/Authentication'
 import PrivateRoute from 'pages/PrivateRoute'
 import { AuthProvider } from 'AuthContext'
 import axios from 'axios'
+import { DataProvider } from 'DataContext'
 
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.withCredentials = true;
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 30000;
 
 axios.interceptors.response.use(
   response => response,
@@ -64,16 +65,12 @@ const router = createBrowserRouter(
   ))
 )
 
-const theme = localStorage.getItem("theme") || "light";
-const colorScheme = localStorage.getItem("color") || "blue";
-
-document.documentElement.setAttribute("data-theme", theme);
-document.documentElement.setAttribute("data-color", colorScheme);
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <DataProvider>
+        <RouterProvider router={router} />
+      </DataProvider>
     </AuthProvider>
   </StrictMode>,
 )
