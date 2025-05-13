@@ -4,7 +4,6 @@ const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
-// Get user information
 router.get("/", async (req, res) => {
   try {
     await client.connect();

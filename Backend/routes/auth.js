@@ -31,10 +31,7 @@ router.post("/register", async (req, res) => {
     const refreshToken = generateRefreshToken(userForToken);
 
     const createdAt = new Date();
-    const expiresAt = new Date(
-      Date.now() +
-        parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000
-    );
+    const expiresAt = new Date(Date.now() + parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000);
 
     const refreshTokenObject = {
       token: refreshToken,
@@ -52,7 +49,7 @@ router.post("/register", async (req, res) => {
       maxAge: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) * 60 * 1000,
     });
 
-    res.cookie("refreshToken", accessToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "strict",
       maxAge:
@@ -66,10 +63,7 @@ router.post("/register", async (req, res) => {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(409).send({
         success: false,
-        message: `An account with the ${
-          field === "phone" ? "phone number" : field
-        } already exists`,
-        field: field,
+        message: `An account with the ${field === "phone" ? "phone number" : field} already exists`, field: field,
       });
     }
     console.error("Could not add the new User: " + error);
@@ -80,6 +74,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log('Login Route Started')
   try {
     await client.connect();
     const query = { email: req.body.email.toLowerCase() };
@@ -89,20 +84,14 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("User not found");
     }
     try {
-      const correctPassword = await bcrypt.compare(
-        req.body.password,
-        user.password
-      );
+      const correctPassword = await bcrypt.compare(req.body.password, user.password);
       if (correctPassword) {
         const userForToken = { userID: user.userID, email: user.email };
         const accessToken = generateAccessToken(userForToken);
         const refreshToken = generateRefreshToken(userForToken);
 
         const createdAt = new Date();
-        const expiresAt = new Date(
-          Date.now() +
-            parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000
-        );
+        const expiresAt = new Date(Date.now() + parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000);
 
         const refreshTokenObject = {
           token: refreshToken,
@@ -110,12 +99,8 @@ router.post("/login", async (req, res) => {
           expiresAt: expiresAt,
         };
 
-        await db
-          .collection("users")
-          .updateOne(
-            { userID: user.userID },
-            { $set: { refreshToken: refreshTokenObject } }
-          );
+        const result = await db.collection("users").updateOne({ userID: user.userID }, { $set: { refreshToken: refreshTokenObject } });
+        if (result.modifiedCount === 0) { return res.status(404).send("User not found") }
 
         res.cookie("accessToken", accessToken, {
           httpOnly: true,
@@ -123,16 +108,13 @@ router.post("/login", async (req, res) => {
           maxAge: parseInt(process.env.JWT_ACCESS_EXPIRES_IN) * 60 * 1000,
         });
 
-        res.cookie("refreshToken", accessToken, {
+        res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
           sameSite: "strict",
-          maxAge:
-            parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000,
+          maxAge: parseInt(process.env.JWT_REFRESH_EXPIRES_IN) * 24 * 60 * 60 * 1000,
         });
 
-        return res
-          .status(200)
-          .send({ success: true, message: "Login successful" });
+        return res.status(200).send({ success: true, message: "Login successful" });
       }
       res.status(401).send("Incorrect password");
     } catch (error) {
@@ -148,22 +130,14 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", async (req, res) => {
+  console.log('Logout Route Started')
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      return res.status(400).send("Refresh token required");
-    }
+    if (!refreshToken) { return res.status(400).send("Refresh token required") }
     await client.connect();
 
-    const result = await db
-      .collection("users")
-      .updateOne(
-        { "refreshToken.token": refreshToken },
-        { $set: { refreshToken: null } }
-      );
-    if (result.modifiedCount === 0) {
-      return res.status(404).send("Token not found");
-    }
+    const result = await db.collection("users").updateOne({ "refreshToken.token": refreshToken }, { $set: { refreshToken: null } });
+    if (result.modifiedCount === 0) { return res.status(404).send("Token not found") }
 
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");

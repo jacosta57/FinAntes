@@ -2,19 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Login from 'components/Authentication/Login';
 import Register from 'components/Authentication/Register';
+import { useAuth } from 'AuthContext';
 
 const Authentication = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('login');
+    const { user, justLoggedOut } = useAuth();
+    
+    useEffect(() => {
+        if (user && !justLoggedOut) {
+            const queryParams = new URLSearchParams(location.search);
+            const redirectTo = queryParams.get('redirect') || '/dashboard';
+            navigate(redirectTo);
+        }
+    }, [user, justLoggedOut, navigate, location]);
     
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const tabParam = queryParams.get('tab');
         
-        if (tabParam === 'login' || tabParam === 'signup') {
-            setActiveTab(tabParam);
-        }
+        if (tabParam === 'login' || tabParam === 'register') setActiveTab(tabParam);
     }, [location.search]);
     
     const onClickHandler = (e) => {
@@ -33,7 +41,7 @@ const Authentication = () => {
                     <div className="auth-container">
                         <div className="auth-tabs">
                             <div className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`} data-tab="login" onClick={onClickHandler}>Login</div>
-                            <div className={`auth-tab ${activeTab === 'signup' ? 'active' : ''}`} data-tab="signup" onClick={onClickHandler}>Sign Up</div>
+                            <div className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`} data-tab="register" onClick={onClickHandler}>Register</div>
                         </div>
                         <div className="auth-content">
                             {activeTab === 'login' ? <Login /> : <Register />}

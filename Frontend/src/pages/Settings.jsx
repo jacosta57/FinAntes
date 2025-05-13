@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Appearance from 'Settings/Appearance';
 import Profile from 'Settings/Profile';
 import Preferences from 'Settings/Preferences';
+import Logout from 'components/Settings/Logout';
 
 function Settings() {
     const [activeTab, setActiveTab] = useState('appearance')
@@ -18,12 +19,14 @@ function Settings() {
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'appearance' ? 'active' : '')} data-tab="appearance" onClick={onClickHandler}>Appearance</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'profile' ? 'active' : '')} data-tab="profile" onClick={onClickHandler}>Profile</a>
                         <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'preferences' ? 'active' : '')} data-tab="preferences" onClick={onClickHandler}>Preferences</a>
+                        <a className={"list-group-item list-group-item-action settings-nav-link " + (activeTab === 'logout' ? 'active' : '')} data-tab="logout" onClick={onClickHandler}>Logout</a>
                     </div>
                 </div>
 
                 {activeTab === 'appearance' && <Appearance />}
                 {activeTab === 'profile' && <Profile />}
                 {activeTab === 'preferences' && <Preferences />}
+                {activeTab === 'logout' && <Logout />}
 
             </div>
         </div>

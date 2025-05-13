@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from 'AuthContext';
 
 const Register = () => {
     const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '', phone: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { checkAuth } = useAuth();
+    
+    const getRedirectUrl = () => {
+        const queryParams = new URLSearchParams(location.search);
+        return queryParams.get('redirect') || '/dashboard';
+    };
     
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -14,26 +22,14 @@ const Register = () => {
         e.preventDefault();
         setError('');
         
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-        
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
-            return;
-        }
+        if (formData.password !== formData.confirmPassword) { setError('Passwords do not match'); return; }
+        if (formData.password.length < 6) { setError('Password must be at least 6 characters'); return; }
         
         setLoading(true);
         try {
-            await axios.post('/api/auth/register', {
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                password: formData.password,
-                phone: formData.phone
-            });
-            navigate('/dashboard');
+            await axios.post('/api/auth/register', { firstName: formData.firstName, lastName: formData.lastName, email: formData.email, password: formData.password, phone: formData.phone });
+            await checkAuth();
+            navigate(getRedirectUrl());
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
             setLoading(false);

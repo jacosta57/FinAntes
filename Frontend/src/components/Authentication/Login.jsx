@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from 'AuthContext';
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -8,6 +9,13 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { setUser, checkAuth } = useAuth();
+    
+    const getRedirectUrl = () => {
+        const queryParams = new URLSearchParams(location.search);
+        return queryParams.get('redirect') || '/dashboard';
+    };
     
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -16,42 +24,21 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            await axios.post('/api/auth/login', { 
-                email: formData.email, 
-                password: formData.password 
-            });
-            navigate('/dashboard');
+            await axios.post('/api/auth/login', { email: formData.email, password: formData.password });
+            await checkAuth();
+            navigate(getRedirectUrl());
         } catch (err) {
-            console.error('Login error details:', {
-                message: err.message,
-                status: err.response?.status,
-                statusText: err.response?.statusText,
-                data: err.response?.data,
-                headers: err.response?.headers
-            });
+            console.error('Login error details:', { message: err.message, status: err.response?.status, statusText: err.response?.statusText, data: err.response?.data, headers: err.response?.headers });
             
-            // Show more specific error messages
             if (err.response) {
-                // The server responded with a status code outside of 2xx
-                if (err.response.status === 404) {
-                    setError('User not found. Please check your email.');
-                } else if (err.response.status === 401) {
-                    setError('Incorrect password. Please try again.');
-                } else if (err.response.status === 500) {
-                    setError(`Server error: ${err.response.data || 'Unknown error'}`);
-                } else {
-                    setError(`Login failed: ${err.response.data || err.message}`);
-                }
-            } else if (err.request) {
-                // The request was made but no response was received
-                setError('No response from server. Please check your connection.');
-            } else {
-                // Something happened in setting up the request
-                setError(`Request error: ${err.message}`);
-            }
+                if (err.response.status === 404) setError('User not found. Please check your email.');
+                else if (err.response.status === 401) setError('Incorrect password. Please try again.');
+                else if (err.response.status === 500) setError(`Server error: ${err.response.data || 'Unknown error'}`);
+                else setError(`Login failed: ${err.response.data || err.message}`);
+            } else if (err.request) setError('No response from server. Please check your connection.');
+            else setError(`Request error: ${err.message}`);
             
             setLoading(false);
-        
         }
     };
 
