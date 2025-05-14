@@ -9,8 +9,7 @@ export function AuthProvider({ children }) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    const protectedRoutes = ['/dashboard', '/settings', '/editor', '/auth'];
-    if (protectedRoutes.includes(window.location.pathname) && document.cookie) { checkAuth() }
+    checkAuth()
   }, []);
 
   useEffect(() => {
@@ -27,29 +26,33 @@ export function AuthProvider({ children }) {
       setUser(response.data.user);
       setLoggedIn(true);
     } catch (error) {
-      if (error.response?.status === 401 && document.cookie) {
+      if (error.response?.status === 401) {
         try {
           await refreshToken();
           const response = await axios.get('/api/auth/verify');
           setUser(response.data.user);
+          setLoggedIn(true);
         } catch (refreshError) {
-          console.error('Auth check and refresh failed:', refreshError);
+          console.log('Auth check and refresh failed');
           setUser(null);
+          setLoggedIn(false);
         }
       } else {
-        console.error('Auth check failed:', error);
+        console.log('Auth check failed');
         setUser(null);
+        setLoggedIn(false);
       }
-    } finally { setLoading(false) }
+    } finally { 
+      setLoading(false);
+    }
   };
-
   const refreshToken = async () => {
     console.log("Getting New Token")
     try {
       await axios.post('/api/auth/refresh-token');
       return true;
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.log('Token refresh failed');
       if (error.response?.status === 401) { setUser(null) }
       return false;
     }
@@ -61,7 +64,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       return true;
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.log('Logout failed');
       return false;
     }
   };

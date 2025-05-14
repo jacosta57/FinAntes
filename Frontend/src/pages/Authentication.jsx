@@ -8,9 +8,7 @@ const Authentication = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('login');
-    const { user, checkAuth } = useAuth();
-
-    useEffect(() => { if (document.cookies) { checkAuth() } }, []);
+    const { user } = useAuth();
 
     useEffect(() => {
         if (user) {
