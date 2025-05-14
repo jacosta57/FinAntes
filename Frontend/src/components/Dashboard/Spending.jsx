@@ -3,7 +3,7 @@ import { useData } from 'DataContext';
 import { useMemo } from 'react';
 
 function Spending() {
-    const { regularExpenses, userProfile, loading, error } = useData();
+    const { regularExpenses, userProfile, loading, error, symbol } = useData();
 
     const chartData = useMemo(() => {
         const weeklySpendings = [0, 0, 0, 0];
@@ -55,7 +55,7 @@ function Spending() {
                     beginAtZero: true,
                     ticks: {
                         callback: function (value) {
-                            return '$' + value.toLocaleString();
+                            return symbol + value.toLocaleString();
                         },
                         color: textColor
                     },
@@ -81,7 +81,7 @@ function Spending() {
                 tooltip: {
                     callbacks: {
                         label: function (context) {
-                            return 'Spending Outlook: $' + context.raw.toLocaleString();
+                            return `Spending Outlook: ${symbol}${context.raw.toLocaleString()}`;
                         }
                     }
                 }

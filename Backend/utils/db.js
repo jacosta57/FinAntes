@@ -6,7 +6,7 @@ let db;
 
 const connectDB = async () => {
   if (db) return db;
-  
+
   try {
     client = new MongoClient(process.env.MONGODB_URI, {
       maxPoolSize: 50,
@@ -14,11 +14,12 @@ const connectDB = async () => {
       maxIdleTimeMS: 60000,
       serverSelectionTimeoutMS: 5000,
     });
-    
+
     await client.connect();
     console.log('Connected to MongoDB');
-    
+
     db = client.db(process.env.MONGODB_NAME);
+
     return db;
   } catch (error) {
     console.error('MongoDB connection error:', error);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useData } from 'DataContext';
 
 function Expenses() {
-    const { upcomingExpenses, loading, error } = useData();
+    const { upcomingExpenses, loading, error, symbol } = useData();
     const [sortedExpenses, setSortedExpenses] = useState([]);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ function Expenses() {
                                     </span>
                                 </div>
                                 <div className="d-flex justify-content-between mt-2">
-                                    <span>${expense.amount.toLocaleString()}</span>
+                                    <span>{symbol}{expense.amount.toLocaleString()}</span>
                                     <span className={urgencyClass}>Due: {formattedDate}</span>
                                 </div>
                             </div>

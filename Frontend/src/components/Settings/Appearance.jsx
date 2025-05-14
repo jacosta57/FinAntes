@@ -116,7 +116,7 @@ function Appearance() {
             <div className="card">
                 <div className="card-header d-flex justify-content-between">
                     <span>Custom Theme</span>
-                    <span className="badge bg-success">Premium</span>
+                    <span className="badge bg-success m-1">Premium Only</span>
                 </div>
                 <div className="card-body">
                     <p className="text-muted">Upload your custom CSS theme file.</p>

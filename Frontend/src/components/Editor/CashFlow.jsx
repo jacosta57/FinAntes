@@ -3,7 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { useData } from 'DataContext';
 
 function CashFlow() {
-  const { incomeSources, regularExpenses, addIncome, updateIncome, deleteIncome, addRegularExpense, updateRegularExpense, deleteRegularExpense, loading } = useData();
+  const { incomeSources, regularExpenses, addIncome, updateIncome, deleteIncome, addRegularExpense, updateRegularExpense, deleteRegularExpense, loading, symbol } = useData();
   const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [selectedIncomeIndex, setSelectedIncomeIndex] = useState(null);
@@ -227,7 +227,7 @@ function CashFlow() {
                           <h6 className="mb-0">{source.name}</h6>
                           <small className="text-muted">{source.frequency}</small>
                         </div>
-                        <span className="text-success">${source.amount}</span>
+                        <span className="text-success">{symbol}{source.amount}</span>
                       </div>
                     </a>
                   ))
@@ -253,7 +253,7 @@ function CashFlow() {
                           <h6 className="mb-0">{expense.name}</h6>
                           <small className="text-muted">{expense.frequency}</small>
                         </div>
-                        <span className="text-danger">${expense.amount}</span>
+                        <span className="text-danger">{symbol}{expense.amount}</span>
                       </div>
                     </a>
                   ))
@@ -272,20 +272,20 @@ function CashFlow() {
             <div className="col-md-4">
               <div className="d-flex justify-content-between mb-2">
                 <span>Total Income:</span>
-                <span className="text-success">${cashFlowSummary.totalIncome.toFixed(2)}</span>
+                <span className="text-success">{symbol}{cashFlowSummary.totalIncome.toFixed(2)}</span>
               </div>
             </div>
             <div className="col-md-4">
               <div className="d-flex justify-content-between mb-2">
                 <span>Total Expenses:</span>
-                <span className="text-danger">${cashFlowSummary.totalExpenses.toFixed(2)}</span>
+                <span className="text-danger">{symbol}{cashFlowSummary.totalExpenses.toFixed(2)}</span>
               </div>
             </div>
             <div className="col-md-4">
               <div className="d-flex justify-content-between mb-2 fw-bold">
                 <span>Net Cash Flow:</span>
                 <span className={cashFlowSummary.netCashFlow > 0 ? "text-success" : cashFlowSummary.netCashFlow < 0 ? "text-danger" : ""}>
-                  ${cashFlowSummary.netCashFlow.toFixed(2)}
+                  {symbol}{cashFlowSummary.netCashFlow.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -307,7 +307,7 @@ function CashFlow() {
             <div className="mb-3">
               <label htmlFor="incomeAmount" className="form-label">Amount</label>
               <div className="input-group">
-                <span className="input-group-text">$</span>
+                <span className="input-group-text">{symbol}</span>
                 <input id="incomeAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={incomeForm.amount} onChange={handleIncomeInputChange} />
               </div>
             </div>
@@ -343,7 +343,7 @@ function CashFlow() {
             <div className="mb-3">
               <label htmlFor="regularExpenseAmount" className="form-label">Amount</label>
               <div className="input-group">
-                <span className="input-group-text">$</span>
+                <span className="input-group-text">{symbol}</span>
                 <input id="regularExpenseAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={expenseForm.amount} onChange={handleExpenseInputChange} />
               </div>
             </div>

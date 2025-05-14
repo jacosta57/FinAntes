@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useData } from 'DataContext';
 
 function Budget() {
-  const { budgetCategories, addBudget, updateBudget, deleteBudget, loading } = useData();
+  const { budgetCategories, addBudget, updateBudget, deleteBudget, loading, symbol } = useData();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [formData, setFormData] = useState({
     categoryName: '',
@@ -138,7 +138,7 @@ function Budget() {
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{category.name}</h6>
-                            <small>${category.currentSpending} / ${category.monthlyBudget}</small>
+                            <small>{symbol}{category.currentSpending} / {symbol}{category.monthlyBudget}</small>
                           </div>
                           <span>{progress}%</span>
                         </div>
@@ -149,7 +149,7 @@ function Budget() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddCategory}>Add Category</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddCategory}>Add Category</button>
             </div>
           </div>
         </div>
@@ -166,14 +166,14 @@ function Budget() {
                 <div className="mb-3">
                   <label htmlFor="monthlyBudget" className="form-label">Monthly Budget</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="monthlyBudget" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.monthlyBudget} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="currentSpending" className="form-label">Current Spending</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="currentSpending" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentSpending} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -182,7 +182,7 @@ function Budget() {
                   <input id="alertThreshold" type="number" className="form-control" placeholder="80" min="0" max="100" value={formData.alertThreshold} onChange={handleInputChange} />
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Category'}</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Category'}</button>
                   <button type="button" className="btn btn-danger" onClick={handleDeleteCategory} disabled={selectedCategoryIndex === null || saving}>Delete</button>
                 </div>
               </form>

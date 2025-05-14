@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from 'DataContext';
 
 function Expenses() {
-  const { upcomingExpenses, addUpcomingExpense, updateUpcomingExpense, deleteUpcomingExpense, loading } = useData();
+  const { upcomingExpenses, addUpcomingExpense, updateUpcomingExpense, deleteUpcomingExpense, loading, symbol } = useData();
   const [selectedExpenseIndex, setSelectedExpenseIndex] = useState(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -149,7 +149,7 @@ function Expenses() {
                             <small>Due: {formatDate(dueDate)}</small>
                           </div>
                           <div className="text-end">
-                            <div>${expense.amount}</div>
+                            <div>{symbol}{expense.amount}</div>
                             <small className={`badge ${statusClass}`}>
                               {diffDays < 0 ? 'Overdue' : diffDays === 0 ? 'Today' : `${diffDays} days`}
                             </small>
@@ -160,7 +160,7 @@ function Expenses() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddExpense}>Add Expense</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddExpense}>Add Expense</button>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ function Expenses() {
                 <div className="mb-3">
                   <label htmlFor="amount" className="form-label">Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="amount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.amount} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -190,7 +190,7 @@ function Expenses() {
                   <label htmlFor="isRecurring" className="form-check-label" >Recurring Expense</label>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Expense'}</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Expense'}</button>
                   <button type="button" className="btn btn-danger" onClick={handleDeleteExpense} disabled={selectedExpenseIndex === null || saving}>Delete</button>
                 </div>
               </form>

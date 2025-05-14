@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useData } from 'DataContext';
 
 function Goals() {
-  const { financialGoals, addGoal, updateGoal, deleteGoal, loading } = useData();
+  const { financialGoals, addGoal, updateGoal, deleteGoal, loading, symbol } = useData();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -155,7 +155,7 @@ function Goals() {
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{goal.name}</h6>
-                            <small className="text-muted">Target: ${goal.targetAmount} by {formatDate(goal.targetDate)}</small>
+                            <small className="text-muted">Target: {symbol}{goal.targetAmount} by {formatDate(goal.targetDate)}</small>
                           </div>
                           <span>{progress}%</span>
                         </div>
@@ -167,7 +167,7 @@ function Goals() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddGoal}>Add Goal</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddGoal}>Add Goal</button>
             </div>
           </div>
         </div>
@@ -184,14 +184,14 @@ function Goals() {
                 <div className="mb-3">
                   <label htmlFor="targetAmount" className="form-label">Target Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="targetAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.targetAmount} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="currentAmount" className="form-label">Current Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="currentAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentAmount} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -200,7 +200,7 @@ function Goals() {
                   <input id="targetDate" type="date" className="form-control" value={formData.targetDate} onChange={handleInputChange} />
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Goal'}</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Goal'}</button>
                   <button type="button" className="btn btn-danger" onClick={handleDeleteGoal} disabled={selectedGoalIndex === null || saving}>Delete</button>
                 </div>
               </form>

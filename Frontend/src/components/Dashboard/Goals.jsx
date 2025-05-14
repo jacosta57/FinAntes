@@ -1,7 +1,7 @@
 import { useData } from 'DataContext';
 
 function Goals() {
-    const { financialGoals, loading, error } = useData();
+    const { financialGoals, loading, error, symbol } = useData();
 
     if (loading) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Loading...</div></div></div>;
     if (error) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center"><div className="text-center"><p className="text-danger">Error loading goals data</p><small className="text-muted">{error}</small></div></div></div></div>;
@@ -34,14 +34,14 @@ function Goals() {
                             <div className='mb-3' key={goal._id || index}>
                                 <div className="d-flex justify-content-between mb-1">
                                     <span>{goal.name}</span>
-                                    <span>${goal.currentAmount.toLocaleString()} / ${goal.targetAmount.toLocaleString()}</span>
+                                    <span>{symbol}{goal.currentAmount.toLocaleString()} / {symbol}{goal.targetAmount.toLocaleString()}</span>
                                 </div>
                                 <div className="progress">
                                     <div className="progress-bar" role="progressbar" style={{ width: progressPercent + "%" }} aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">{progressPercent}%</div>
                                 </div>
                                 <div className="d-flex justify-content-between mt-1">
                                     <small className="text-muted">
-                                        {monthlyContribution > 0 ? `$${monthlyContribution}/month needed` : 'Goal reached!'}
+                                        {monthlyContribution > 0 ? `${symbol}${monthlyContribution}/month needed` : 'Goal reached!'}
                                     </small>
                                     <small className="text-muted">
                                         {timeRemaining > 0 ? timeRemaining + ' days remaining' : 'Target date passed'}

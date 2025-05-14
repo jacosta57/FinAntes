@@ -96,7 +96,7 @@ router.post("/login", async (req, res) => {
           expiresAt: expiresAt,
         };
 
-        const result = await db.collection("users").updateOne({ userID: user.userID }, { $set: { refreshToken: refreshTokenObject } });
+        const result = await db.collection("users").updateOne({ userID: user.userID }, { $push: { refreshTokens: refreshTokenObject } });
         if (result.modifiedCount === 0) { return res.status(404).send("User not found") }
 
         res.cookie("accessToken", accessToken, {

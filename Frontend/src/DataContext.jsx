@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from 'AuthContext'
 
 const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+  const {loggedIn}  = useAuth();
   const [state, setState] = useState({
     incomeSources: [],
     budgetCategories: [],
@@ -13,11 +15,14 @@ export const DataProvider = ({ children }) => {
     upcomingExpenses: [],
     userProfile: null,
     loading: false,
-    error: null
+    error: null,
+    symbol: '',
   });
 
   const fetchAllData = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
+    console.log(loggedIn)
+    if(!loggedIn) { return }
     try {
       const [income, budget, investments, goals, regular, upcoming, user] = await Promise.all([
         axios.get('/api/income'),
@@ -28,13 +33,32 @@ export const DataProvider = ({ children }) => {
         axios.get('/api/upcoming-expenses'),
         axios.get('/api/user')
       ]);
-      
+
       let cleanUser = null;
       if (user.data) {
         const { _id, userID, ...rest } = user.data;
         cleanUser = rest;
       }
-      
+
+      let symbol = '';
+      switch (cleanUser?.currency) {
+        case 'JPY':
+          symbol = '¥';
+          break;
+        case 'EUR':
+          symbol = '€';
+          break;
+        case 'GBP':
+          symbol = '£';
+          break;
+        case 'CAD':
+        case 'USD':
+        default:
+          symbol = '$';
+          break;
+      }
+
+
       setState({
         incomeSources: income.data || [],
         budgetCategories: budget.data || [],
@@ -44,17 +68,18 @@ export const DataProvider = ({ children }) => {
         upcomingExpenses: upcoming.data || [],
         userProfile: cleanUser,
         loading: false,
-        error: null
+        error: null,
+        symbol: symbol
       });
-      
+
       if (cleanUser && cleanUser.theme) {
         document.documentElement.setAttribute('data-theme', cleanUser.theme);
         document.documentElement.setAttribute('data-color', cleanUser.color);
       }
     } catch (err) {
-      setState(prev => ({ 
-        ...prev, 
-        loading: false, 
+      setState(prev => ({
+        ...prev,
+        loading: false,
         error: err.response?.data?.message || err.message || 'Failed to fetch data'
       }));
     }
@@ -94,22 +119,22 @@ export const DataProvider = ({ children }) => {
 
   const updateUserProfile = async (profileData) => {
     const response = await axios.put('/api/user/update', profileData);
-    
+
     let cleanUser = null;
     if (response.data) {
       const { _id, userID, ...rest } = response.data;
       cleanUser = rest;
     }
-    
+
     setState(prev => ({ ...prev, userProfile: cleanUser }));
-    
+
     if (profileData.theme !== undefined) {
       document.documentElement.setAttribute('data-theme', profileData.theme);
     }
     if (profileData.color !== undefined) {
       document.documentElement.setAttribute('data-color', profileData.color);
     }
-    
+
     return cleanUser;
   };
 
@@ -122,9 +147,9 @@ export const DataProvider = ({ children }) => {
     const timer = setTimeout(() => {
       fetchAllData();
     }, 500);
-    
+
     return () => clearTimeout(timer);
-  }, []);
+  }, [loggedIn]);
 
   const value = {
     ...state,

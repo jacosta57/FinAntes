@@ -16,6 +16,10 @@ import { AuthProvider } from 'AuthContext'
 import axios from 'axios'
 import { DataProvider } from 'DataContext'
 
+
+document.documentElement.setAttribute('data-theme', "dark");
+document.documentElement.setAttribute('data-color', "blue");
+
 axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 30000;

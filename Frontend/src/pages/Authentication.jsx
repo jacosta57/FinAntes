@@ -8,15 +8,15 @@ const Authentication = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('login');
-    const { user, justLoggedOut } = useAuth();
+    const { user, } = useAuth();
     
     useEffect(() => {
-        if (user && !justLoggedOut) {
+        if (user) {
             const queryParams = new URLSearchParams(location.search);
             const redirectTo = queryParams.get('redirect') || '/dashboard';
             navigate(redirectTo);
         }
-    }, [user, justLoggedOut, navigate, location]);
+    }, [user, navigate, location]);
     
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);

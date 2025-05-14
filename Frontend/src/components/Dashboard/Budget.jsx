@@ -4,7 +4,7 @@ import { Doughnut } from 'react-chartjs-2';
 import { useData } from 'DataContext';
 
 function Budget() {
-  const { budgetCategories, userProfile, loading, error } = useData();
+  const { budgetCategories, userProfile, loading, error, symbol } = useData();
 
   useEffect(() => {
     const doughnutCenterText = {
@@ -45,7 +45,7 @@ function Budget() {
 
           ctx.font = `bold ${fontSize * 1.2}px Arial`;
           ctx.fillStyle = textColor;
-          ctx.fillText(`${totalSpending.toLocaleString()}`, width / 2, height / 2 - 50);
+          ctx.fillText(`${symbol}${totalSpending.toLocaleString()}`, width / 2, height / 2 - 50);
 
           ctx.font = `${fontSize * 0.8}px Arial`;
           ctx.fillText('used', width / 2, height / 2 - 30);
@@ -53,7 +53,7 @@ function Budget() {
           const remainingBudget = totalBudget - totalSpending;
           const remainingDisplay = totalBudget === 1000 && dataPoints.length === 1 ?
             'No budget data available' :
-            `${remainingBudget.toLocaleString()} left (${percentUsed}% used)`;
+            `${symbol}${remainingBudget.toLocaleString()} left (${percentUsed}% used)`;
 
           ctx.fillText(remainingDisplay, width / 2, height / 2 - 10);
 
@@ -67,7 +67,7 @@ function Budget() {
     return () => {
       ChartJS.unregister(doughnutCenterText);
     };
-  }, []);
+  }, [symbol, budgetCategories]);
 
   const { chartData, chartOptions } = useMemo(() => {
     let totalBudget = 0;
@@ -137,15 +137,14 @@ function Budget() {
               const percentage = totalBudget > 0 ? Math.round((value / totalBudget) * 100) : 0;
 
               if (label === 'Remaining Budget') {
-                return `${label}: ${value.toLocaleString()} (${percentage}% of budget)`;
+                return `${label}: ${symbol}${value.toLocaleString()} (${percentage}% of budget)`;
               } else {
                 const category = budgetCategories.find(cat => cat.name === label);
                 if (category) {
                   const remaining = category.monthlyBudget - category.currentSpending;
-                  const categoryPercentUsed = Math.round((category.currentSpending / category.monthlyBudget) * 100);
-                  return `${label}: ${value.toLocaleString()} spent (${remaining.toLocaleString()} remaining, ${categoryPercentUsed}% used)`;
+                  return `${label}: ${symbol}${value.toLocaleString()} spent, ${symbol}${remaining.toLocaleString()} remaining`;
                 }
-                return `${label}: ${value.toLocaleString()}`;
+                return `${label}: ${symbol}${value.toLocaleString()}`;
               }
             }
           }

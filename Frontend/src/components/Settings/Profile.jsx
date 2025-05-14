@@ -13,7 +13,7 @@ function Profile() {
         phone: '',
     });
     const [password, setPassword] = useState({
-        currentPassword: '',
+        password: '',
         newPassword: '',
         confirmPassword: '',
     });
@@ -89,14 +89,14 @@ function Profile() {
             try {
                 await updatePassword(password);
                 setPassword({
-                    currentPassword: '',
+                    password: '',
                     newPassword: '',
                     confirmPassword: '',
                 });
                 alert('New password set');
             } catch (error) {
                 if (error.response?.status === 401) {
-                    setErrors({ currentPassword: 'Current password is incorrect' });
+                    setErrors({ password: 'Current password is incorrect' });
                 } else {
                     alert('Error updating password: ' + error.message);
                 }
@@ -120,8 +120,8 @@ function Profile() {
         ) { 
             newErrors.newPassword = 'Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number.';
         }
-        if (!password.currentPassword) { 
-            newErrors.currentPassword = 'Current password is required';
+        if (!password.password) { 
+            newErrors.password = 'Current password is required';
         }
 
         setErrors(newErrors);
@@ -152,7 +152,7 @@ function Profile() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">Email Address</label>
-                            <input type="email" className="form-control" id="email" name="email" autoComplete="email" placeholder="Enter your email" value={uinfo.email} onChange={handleChange} />
+                            <input type="email" className="form-control" id="email" name="email" autoComplete="email" placeholder="Enter your email" value={uinfo.email} onChange={handleChange} disabled/>
                             {errors.email && <p className="text-danger fs-7 m-0">{errors.email}</p>}
                         </div>
                         <div className="mb-3">
@@ -170,9 +170,9 @@ function Profile() {
                 <div className="card-body">
                     <form id="passwordForm" onSubmit={handleSubmitPassword}>
                         <div className="mb-3">
-                            <label htmlFor="currentPassword" className="form-label">Current Password</label>
-                            <input type="password" className="form-control" id="currentPassword" name="currentPassword" autoComplete="current-password" value={password.currentPassword} onChange={handleChangePassword} />
-                            {errors.currentPassword && <p className="text-danger fs-7 m-0">{errors.currentPassword}</p>}
+                            <label htmlFor="password" className="form-label">Current Password</label>
+                            <input type="password" className="form-control" id="password" name="password" autoComplete="current-password" value={password.password} onChange={handleChangePassword} />
+                            {errors.password && <p className="text-danger fs-7 m-0">{errors.password}</p>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="newPassword" className="form-label">New Password</label>

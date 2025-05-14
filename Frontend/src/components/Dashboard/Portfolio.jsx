@@ -3,7 +3,7 @@ import { useData } from 'DataContext';
 import { useMemo } from 'react';
 
 function Portfolio() {
-    const { investments, userProfile, loading, error } = useData();
+    const { investments, userProfile, loading, error, symbol } = useData();
 
     const { chartData, chartOptions, totalCurrentValue, returnPercent } = useMemo(() => {
         let totalCurrentValue = 0;
@@ -41,7 +41,7 @@ function Portfolio() {
                     beginAtZero: true,
                     ticks: {
                         callback: function(value) {
-                            return '$' + value.toLocaleString();
+                            return symbol + value.toLocaleString();
                         },
                         color: textColor
                     },
@@ -67,7 +67,7 @@ function Portfolio() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': $' + context.raw.toLocaleString();
+                            return `${context.dataset.label} : ${symbol} ${context.raw.toLocaleString()}`;
                         }
                     }
                 }
@@ -95,7 +95,7 @@ function Portfolio() {
                     <div className="mt-3">
                         <div className="d-flex justify-content-between mb-2">
                             <span>Total Portfolio</span>
-                            <span>${totalCurrentValue.toFixed(2)}</span>
+                            <span>{symbol}{totalCurrentValue.toFixed(2)}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                             <span>This Month</span>

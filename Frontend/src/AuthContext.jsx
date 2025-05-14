@@ -6,31 +6,34 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [justLoggedOut, setJustLoggedOut] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [location, setLocation] = useState(window.location.pathname);
 
-  useEffect(() => { checkAuth() }, []);
+  useEffect(() => {
+    window.addEventListener('popstate', () => { setLocation(window.location.pathname) });
+    const protectedRoutes = ['/dashboard', '/settings', '/editor'];
+    if (protectedRoutes.includes(location)) { checkAuth() }
+  }, [location]);
 
   useEffect(() => {
     if (!user) return;
-
-    const refreshInterval = setInterval(() => { refreshToken() }, 15 * 60 * 1000); // 15 minutes
-
+    const refreshInterval = setInterval(() => { refreshToken() }, 5 * 60 * 1000); // 5 minutes
     return () => clearInterval(refreshInterval);
   }, [user]);
 
   const checkAuth = async () => {
+    console.log("Authentication Checked")
     try {
       setLoading(true);
       const response = await axios.get('/api/auth/verify');
       setUser(response.data.user);
-      setJustLoggedOut(false);
+      setLoggedIn(true);
     } catch (error) {
       if (error.response?.status === 401) {
         try {
           await refreshToken();
           const response = await axios.get('/api/auth/verify');
           setUser(response.data.user);
-          setJustLoggedOut(false);
         } catch (refreshError) {
           console.error('Auth check and refresh failed:', refreshError);
           setUser(null);
@@ -39,12 +42,11 @@ export function AuthProvider({ children }) {
         console.error('Auth check failed:', error);
         setUser(null);
       }
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false) }
   };
 
   const refreshToken = async () => {
+    console.log("Getting New Token")
     try {
       await axios.post('/api/auth/refresh-token');
       return true;
@@ -59,7 +61,6 @@ export function AuthProvider({ children }) {
     try {
       await axios.post('/api/auth/logout');
       setUser(null);
-      setJustLoggedOut(true);
       return true;
     } catch (error) {
       console.error('Logout failed:', error);
@@ -75,8 +76,7 @@ export function AuthProvider({ children }) {
       checkAuth,
       refreshToken,
       logout,
-      justLoggedOut,
-      setJustLoggedOut
+      loggedIn
     }}>
       {children}
     </AuthContext.Provider>

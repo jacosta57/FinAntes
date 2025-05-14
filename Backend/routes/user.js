@@ -37,6 +37,7 @@ router.put("/update", async (req, res) => {
 });
 
 router.put("/password", async (req, res) => {
+  console.log("Password route started")
   try {
     const db = getDB();
 

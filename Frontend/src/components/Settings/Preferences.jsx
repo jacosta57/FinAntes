@@ -11,26 +11,21 @@ function Preferences() {
     const importOnChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         setSaving(true);
         const reader = new FileReader();
 
         reader.onload = async (e) => {
             try {
                 const data = JSON.parse(e.target.result);
-                
-                if (data.theme || data.color) {
-                    await updateUserProfile({ ...userProfile, theme: data.theme || userProfile.theme, color: data.color || userProfile.color });
-                }
-                
+                if (data.theme || data.color) { await updateUserProfile({ ...userProfile, theme: data.theme || userProfile.theme, color: data.color || userProfile.color }) }
+
                 alert("Settings imported successfully!");
-                
+
                 await fetchData();
-            } catch (error) { 
-                alert("Error importing data: " + error.message) 
-            } finally {
-                setSaving(false);
             }
+            catch (error) { alert("Error importing data: " + error.message) }
+            finally { setSaving(false); }
         };
         reader.readAsText(file);
     };
@@ -38,18 +33,25 @@ function Preferences() {
     const exportOnClick = async () => {
         setSaving(true);
         try {
+            const removeFields = (array) => {
+                return JSON.parse(JSON.stringify(array)).map(item => {
+                    delete item._id;
+                    delete item.userID;
+                    return item;
+                });
+            };
+
             const exportData = {
                 theme: userProfile?.theme,
                 color: userProfile?.color,
-                userProfile: userProfile,
-                incomeSources: incomeSources,
-                budgetCategories: budgetCategories,
-                investments: investments,
-                financialGoals: financialGoals,
-                regularExpenses: regularExpenses,
-                upcomingExpenses: upcomingExpenses
+                incomeSources: removeFields(incomeSources),
+                budgetCategories: removeFields(budgetCategories),
+                investments: removeFields(investments),
+                financialGoals: removeFields(financialGoals),
+                regularExpenses: removeFields(regularExpenses),
+                upcomingExpenses: removeFields(upcomingExpenses)
             };
-            
+
             const dataStr = JSON.stringify(exportData, null, 2);
             const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
@@ -59,60 +61,48 @@ function Preferences() {
             linkElement.setAttribute("href", dataUri);
             linkElement.setAttribute("download", exportFileDefaultName);
             linkElement.click();
-        } catch (error) {
-            alert("Error exporting data: " + error.message);
-        } finally {
-            setSaving(false);
         }
+        catch (error) { alert("Error exporting data: " + error.message); }
+        finally { setSaving(false); }
     };
 
     const confirmClearOnClick = async () => {
         setSaving(true);
         try {
             const deletePromises = [];
-            
+
             incomeSources.forEach(income => deletePromises.push(deleteIncome(income._id)));
             budgetCategories.forEach(budget => deletePromises.push(deleteBudget(budget._id)));
             investments.forEach(investment => deletePromises.push(deleteInvestment(investment._id)));
             financialGoals.forEach(goal => deletePromises.push(deleteGoal(goal._id)));
             regularExpenses.forEach(expense => deletePromises.push(deleteRegularExpense(expense._id)));
             upcomingExpenses.forEach(expense => deletePromises.push(deleteUpcomingExpense(expense._id)));
-            
+
             await Promise.all(deletePromises);
-            
+
             alert("All financial data has been cleared successfully.");
 
             setConfirmChecked(false);
             setShowModal(false);
-            
+
             await fetchData();
-        } catch (error) {
-            alert("Error clearing data: " + error.message);
-        } finally {
-            setSaving(false);
         }
+        catch (error) { alert("Error clearing data: " + error.message); }
+        finally { setSaving(false); }
     };
 
     const handleCurrencyChange = async (e) => {
         setSaving(true);
-        try {
-            await updateUserProfile({ ...userProfile, currency: e.target.value });
-        } catch (error) {
-            alert("Error updating currency: " + error.message);
-        } finally {
-            setSaving(false);
-        }
+        try { await updateUserProfile({ ...userProfile, currency: e.target.value }); }
+        catch (error) { alert("Error updating currency: " + error.message); }
+        finally { setSaving(false); }
     };
 
     const handleCurrencySymbolToggle = async (e) => {
         setSaving(true);
-        try {
-            await updateUserProfile({ ...userProfile, showCurrencySymbol: e.target.checked });
-        } catch (error) {
-            alert("Error updating currency symbol preference: " + error.message);
-        } finally {
-            setSaving(false);
-        }
+        try { await updateUserProfile({ ...userProfile, showCurrencySymbol: e.target.checked }); }
+        catch (error) { alert("Error updating currency symbol preference: " + error.message); }
+        finally { setSaving(false); }
     };
 
     return (
