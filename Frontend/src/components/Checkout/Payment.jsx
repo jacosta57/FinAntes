@@ -18,7 +18,6 @@ function Checkout() {
   const [cardError, setCardError] = useState("");
   const [zipError, setZipError] = useState("");
   const [cvcError, setCvcError] = useState("");
-  const [expError, setExpError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -157,9 +156,6 @@ function Checkout() {
                 required
               />
             </div>
-            {expError && (
-                <small className="text-danger">{expError}</small>
-              )}
             <div className="mb-2">
               <label className="form-label">CVC</label>
               <input
