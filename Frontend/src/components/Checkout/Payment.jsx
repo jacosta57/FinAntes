@@ -14,10 +14,53 @@ function Checkout() {
     zipCode: "",
     email: ""
   });
+
+  
+  //Validation
   const [isFormValid, setIsFormValid] = useState(false);
   const [cardError, setCardError] = useState("");
   const [zipError, setZipError] = useState("");
   const [cvcError, setCvcError] = useState("");
+
+  const [user, setUser] = useState(null);
+
+  
+
+  
+
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/user", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then(res => res.json())
+      .then(data => {
+        
+        console.log("Fetched user:", data);
+        setUser(data);
+
+        console.log(data.firstName);
+
+        setFormData((prev) => ({
+        ...prev,
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        email: data.email || "",
+        zipCode: data.zipCode || "",
+      }));
+
+
+        
+      })
+      
+
+      .catch(err => console.error("Error fetching user:", err));
+  }, []); 
+
+
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,6 +139,9 @@ function Checkout() {
 
     setIsFormValid(isValid);
   };
+
+  
+
 
   useEffect(() => {
     validateForm();
