@@ -25,32 +25,6 @@ axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 30000;
 
-axios.interceptors.response.use(
-  response => response,
-  async error => {
-    const originalRequest = error.config;
-
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes('/api/auth/verify') &&
-      !originalRequest.url?.includes('/api/auth/refresh-token')
-    ) {
-      originalRequest._retry = true;
-
-      try {
-        await axios.post('/api/auth/refresh-token');
-        return axios(originalRequest);
-      } catch (refreshError) {
-        if (window.location.pathname.match(/^\/(dashboard|editor|settings)/)) { window.location.href = '/auth?tab=login' }
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
-
 const router = createBrowserRouter(
   createRoutesFromElements((
     <Route path='/' element={<RootLayout />}>
