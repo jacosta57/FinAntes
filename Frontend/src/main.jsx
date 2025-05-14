@@ -16,6 +16,7 @@ import { AuthProvider } from 'AuthContext'
 import axios from 'axios'
 import { DataProvider } from 'DataContext'
 import Checkout from 'pages/Checkout'
+import ConfirmPremium from 'pages/ConfirmPremium'
 import Demo from 'pages/Demo'
 
 document.documentElement.setAttribute('data-theme', "dark");
@@ -34,6 +35,7 @@ const router = createBrowserRouter(
       <Route path='/auth' element={<Authentication />} />
       <Route path='/authors' element={<Authors />} />
       {<Route path='/checkout' element={<Checkout />}/>}
+      {<Route path='/confirmPremium' element={<ConfirmPremium />}/>}
       { <Route path='/demo' element={<Demo />}/> }
 
       {/* Protected routes */}

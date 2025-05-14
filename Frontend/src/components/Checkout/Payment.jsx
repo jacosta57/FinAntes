@@ -112,7 +112,7 @@ function Checkout() {
   const confirmPurchaseOnClick = () => {
     alert("Purchase Successful!");
     setShowModal(false);
-    navigate("/Dashboard")
+    navigate("/confirmPremium")
   };
 
   return (
