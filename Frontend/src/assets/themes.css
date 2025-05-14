@@ -19,6 +19,7 @@
   --input-bg: #ffffff;
   --input-border: #ced4da;
   --input-text: #333333;
+  --btn-primary-text: #ffffff;
 }
 
 /* Dark Theme Overrides */
@@ -47,7 +48,6 @@
   --accent-color: #2962ff;
   --secondary-accent: #00C853;
   --btn-primary-bg: #2962ff;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #2962ff;
@@ -60,7 +60,6 @@
   --accent-color: #90caf9;
   --secondary-accent: #69f0ae;
   --btn-primary-bg: #90caf9;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #90caf9;
@@ -73,7 +72,6 @@
   --accent-color: #00C853;
   --secondary-accent: #2962ff;
   --btn-primary-bg: #00C853;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #00C853;
@@ -86,7 +84,6 @@
   --accent-color: #69f0ae;
   --secondary-accent: #90caf9;
   --btn-primary-bg: #69f0ae;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #69f0ae;
@@ -99,7 +96,6 @@
   --accent-color: #6200EA;
   --secondary-accent: #00C853;
   --btn-primary-bg: #6200EA;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #6200EA;
@@ -112,7 +108,6 @@
   --accent-color: #b388ff;
   --secondary-accent: #69f0ae;
   --btn-primary-bg: #b388ff;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #b388ff;
@@ -125,7 +120,6 @@
   --accent-color: #FF6D00;
   --secondary-accent: #2962ff;
   --btn-primary-bg: #FF6D00;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #FF6D00;
@@ -138,7 +132,6 @@
   --accent-color: #FFAB40;
   --secondary-accent: #90caf9;
   --btn-primary-bg: #FFAB40;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #FFAB40;
@@ -151,7 +144,6 @@
   --accent-color: #00BFA5;
   --secondary-accent: #FF6D00;
   --btn-primary-bg: #00BFA5;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #00BFA5;
@@ -164,7 +156,6 @@
   --accent-color: #64FFDA;
   --secondary-accent: #FFAB40;
   --btn-primary-bg: #64FFDA;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #64FFDA;
@@ -177,7 +168,6 @@
   --accent-color: #D50000;
   --secondary-accent: #00BFA5;
   --btn-primary-bg: #D50000;
-  --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
   --btn-secondary-text: #333333;
   --progress-bar: #D50000;
@@ -190,7 +180,6 @@
   --accent-color: #FF5252;
   --secondary-accent: #64FFDA;
   --btn-primary-bg: #FF5252;
-  --btn-primary-text: #121212;
   --btn-secondary-bg: #3d3d4a;
   --btn-secondary-text: #e0e0e0;
   --progress-bar: #FF5252;
@@ -293,6 +282,13 @@ body {
   box-shadow: 0 0 0 0.25rem rgba(var(--accent-color), 0.25);
 }
 
+.form-control:disabled {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+  filter: brightness(80%)
+}
+
 /* Lists */
 .list-group-item {
   background-color: var(--card-bg);
@@ -390,4 +386,86 @@ span[class="input-group-text"] {
     color 0.3s ease,
     border-color 0.3s ease,
     box-shadow 0.3s ease;
+}
+
+/* Authentication Component Styles */
+
+/* Authentication Component Styles */
+
+.auth-container {
+  box-shadow: 0 2px 10px var(--card-shadow);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+.auth-tabs {
+  display: flex;
+  width: 100%;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.auth-tab.active {
+  background-color: var(--accent-color);
+  color: var(--btn-primary-text);
+}
+
+.auth-content {
+  padding: 24px;
+  color: var(--text-color);
+}
+
+/* Login/Register form elements */
+.auth-content input[type="email"],
+.auth-content input[type="password"],
+.auth-content input[type="text"],
+.auth-content input[type="tel"] {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+}
+
+.auth-content .form-label {
+  color: var(--text-color);
+}
+
+.auth-content .btn-success {
+  background-color: var(--secondary-accent);
+  border-color: var(--secondary-accent);
+  color: var(--btn-primary-text);
+}
+
+.auth-content .btn-outline-primary {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.auth-content .btn-outline-primary:hover {
+  background-color: var(--accent-color);
+  color: var(--btn-primary-text);
+}
+
+.auth-content .text-primary {
+  color: var(--accent-color) !important;
+}
+
+.auth-content .form-check-input:checked {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+canvas {
+  max-width: 350px;
+  max-height: 350px;
 }

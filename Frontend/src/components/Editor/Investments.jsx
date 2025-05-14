@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useData } from 'DataContext';
 
 function Investments() {
-  const [investments, setInvestments] = useState([]);
+  const { investments, addInvestment, updateInvestment, deleteInvestment, loading, symbol } = useData();
   const [selectedInvestmentIndex, setSelectedInvestmentIndex] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     type: 'stock',
@@ -15,11 +17,6 @@ function Investments() {
     totalReturn: 0,
     totalReturnPercent: 0
   });
-
-  useEffect(() => {
-    const loadedInvestments = JSON.parse(localStorage.getItem("investments") || "[]");
-    setInvestments(loadedInvestments);
-  }, []);
 
   useEffect(() => {
     updatePortfolioSummary();
@@ -97,7 +94,7 @@ function Investments() {
     setSelectedInvestmentIndex(null);
   };
 
-  const handleSaveInvestment = (e) => {
+  const handleSaveInvestment = async (e) => {
     e.preventDefault();
 
     const investmentData = {
@@ -123,33 +120,39 @@ function Investments() {
       return;
     }
 
-    const newInvestments = [...investments];
+    setSaving(true);
+    try {
+      if (selectedInvestmentIndex !== null) {
+        await updateInvestment(investments[selectedInvestmentIndex]._id, investmentData);
+      } else {
+        await addInvestment(investmentData);
+      }
 
-    if (selectedInvestmentIndex !== null) {
-      newInvestments[selectedInvestmentIndex] = investmentData;
-    } else {
-      newInvestments.push(investmentData);
+      handleAddInvestment();
+    } catch (error) {
+      alert('Error saving investment: ' + error.message);
+    } finally {
+      setSaving(false);
     }
-
-    setInvestments(newInvestments);
-    localStorage.setItem("investments", JSON.stringify(newInvestments));
-
-    handleAddInvestment();
   };
 
-  const handleDeleteInvestment = () => {
+  const handleDeleteInvestment = async () => {
     if (selectedInvestmentIndex === null) return;
 
     if (window.confirm("Are you sure you want to delete this investment?")) {
-      const newInvestments = [...investments];
-      newInvestments.splice(selectedInvestmentIndex, 1);
-
-      setInvestments(newInvestments);
-      localStorage.setItem("investments", JSON.stringify(newInvestments));
-
-      handleAddInvestment();
+      setSaving(true);
+      try {
+        await deleteInvestment(investments[selectedInvestmentIndex]._id);
+        handleAddInvestment();
+      } catch (error) {
+        alert('Error deleting investment: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
     }
   };
+
+  if (loading) return <div className="text-center py-4">Loading investment data...</div>;
 
   return (
     <>
@@ -164,14 +167,14 @@ function Investments() {
                 <div className="col-md-3 mb-3">
                   <div className="d-flex flex-column align-items-center">
                     <span className="text-muted">Total Value</span>
-                    <span className="fs-4 fw-bold">${portfolioSummary.totalValue.toFixed(2)}</span>
+                    <span className="fs-4 fw-bold">{symbol}{portfolioSummary.totalValue.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="col-md-3 mb-3">
                   <div className="d-flex flex-column align-items-center">
                     <span className="text-muted">Total Return</span>
                     <span className={`fs-4 ${portfolioSummary.totalReturn >= 0 ? 'text-success' : 'text-danger'}`}>
-                      {portfolioSummary.totalReturn >= 0 ? '+' : '-'}${Math.abs(portfolioSummary.totalReturn).toFixed(2)}
+                      {portfolioSummary.totalReturn >= 0 ? '+' : '-'}{symbol}{Math.abs(portfolioSummary.totalReturn).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -216,14 +219,14 @@ function Investments() {
                     const returnClass = returnAmount >= 0 ? "text-success" : "text-danger";
 
                     return (
-                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectInvestment(index); }}>
+                      <a href="#" className="list-group-item list-group-item-action" key={investment._id} onClick={(e) => { e.preventDefault(); selectInvestment(index); }}>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{investment.name}</h6>
-                            <small className="text-muted">{investment.type} - {shares} shares @ ${currentValuePerShare.toFixed(2)}</small>
+                            <small className="text-muted">{investment.type} - {shares} shares @ {symbol}{currentValuePerShare.toFixed(2)}</small>
                           </div>
                           <div className="text-end">
-                            <div>${totalInvestmentValue.toFixed(2)}</div>
+                            <div>{symbol}{totalInvestmentValue.toFixed(2)}</div>
                             <small className={returnClass}>{returnAmount >= 0 ? '+' : ''}{returnPercent}%</small>
                           </div>
                         </div>
@@ -232,7 +235,7 @@ function Investments() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddInvestment}>Add Investment</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddInvestment}>Add Investment</button>
             </div>
           </div>
         </div>
@@ -264,20 +267,20 @@ function Investments() {
                 <div className="mb-3">
                   <label htmlFor="currentValue" className="form-label">Current Value</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="currentValue" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentValue} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="purchaseValue" className="form-label">Purchase Value</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="purchaseValue" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.purchaseValue} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary">Save Investment</button>
-                  <button type="button" className="btn btn-danger" onClick={handleDeleteInvestment} disabled={selectedInvestmentIndex === null}>Delete</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Investment'}</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteInvestment} disabled={selectedInvestmentIndex === null || saving}>Delete</button>
                 </div>
               </form>
             </div>

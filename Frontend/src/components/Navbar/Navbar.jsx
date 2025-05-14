@@ -10,8 +10,8 @@ function Navbar() {
       navbarLinks = (
         <>
           <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
-          <NavLink to="./editor"><button className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
-          <NavLink to="./settings"><button className="btn btn-outline-light">Settings</button></NavLink>
+          <NavLink to="/editor"><button className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
+          <NavLink to="/settings"><button className="btn btn-outline-light">Settings</button></NavLink>
         </>
       )
       break;
@@ -19,8 +19,8 @@ function Navbar() {
       navbarLinks = (
         <>
           <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
-          <NavLink to="./editor"><button className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
-          <NavLink to="./dashboard"><button className="btn btn-outline-light">Back to Dashboard</button></NavLink>
+          <NavLink to="/editor"><button className="btn btn-outline-light mx-2">Edit Data</button></NavLink>
+          <NavLink to="/dashboard"><button className="btn btn-outline-light">Back to Dashboard</button></NavLink>
         </>
       )
       break;
@@ -28,16 +28,16 @@ function Navbar() {
       navbarLinks = (
         <>
           <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">{userStatus}</span>
-          <NavLink to="./dashboard"><button className="btn btn-outline-light mx-2">Back to Dashboard</button></NavLink>
-          <NavLink to="./settings"><button className="btn btn-outline-light">Settings</button></NavLink>
+          <NavLink to="/dashboard"><button className="btn btn-outline-light mx-2">Back to Dashboard</button></NavLink>
+          <NavLink to="/settings"><button className="btn btn-outline-light">Settings</button></NavLink>
         </>
       )
       break;
     default:
       navbarLinks = (
         <>
-          <NavLink to="/dashboard"><button className="btn btn-outline-light mx-2">Login</button></NavLink>
-          <NavLink to="/settings"><button className="btn btn-outline-light">Signup</button></NavLink>
+          <NavLink to="/auth?tab=login"><button className="btn btn-outline-light mx-2">Login</button></NavLink>
+          <NavLink to="/auth?tab=register"><button className="btn btn-outline-light">Signup</button></NavLink>
         </>
       )
   }

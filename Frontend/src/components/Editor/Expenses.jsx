@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useData } from 'DataContext';
 
 function Expenses() {
-  const [expenses, setExpenses] = useState([]);
+  const { upcomingExpenses, addUpcomingExpense, updateUpcomingExpense, deleteUpcomingExpense, loading, symbol } = useData();
   const [selectedExpenseIndex, setSelectedExpenseIndex] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     amount: '',
@@ -10,19 +12,11 @@ function Expenses() {
     isRecurring: false
   });
 
-  // Load expenses from localStorage
-  useEffect(() => {
-    const loadedExpenses = JSON.parse(localStorage.getItem("upcomingExpenses") || "[]");
-    setExpenses(loadedExpenses);
-  }, []);
-
-  // Format date for display
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormData({
@@ -31,9 +25,8 @@ function Expenses() {
     });
   };
 
-  // Handle expense selection
   const selectExpense = (index) => {
-    const sortedExpenses = [...expenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const sortedExpenses = [...upcomingExpenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     const expense = sortedExpenses[index];
     
     if (!expense) return;
@@ -45,10 +38,9 @@ function Expenses() {
       isRecurring: expense.isRecurring
     });
     
-    setSelectedExpenseIndex(index);
+    setSelectedExpenseIndex(upcomingExpenses.indexOf(expense));
   };
 
-  // Handle add expense button
   const handleAddExpense = () => {
     setFormData({
       name: '',
@@ -60,8 +52,7 @@ function Expenses() {
     setSelectedExpenseIndex(null);
   };
 
-  // Handle save expense
-  const handleSaveExpense = (e) => {
+  const handleSaveExpense = async (e) => {
     e.preventDefault();
     
     const expenseData = {
@@ -86,44 +77,40 @@ function Expenses() {
       return;
     }
     
-    const newExpenses = [...expenses];
-    
-    if (selectedExpenseIndex !== null) {
-      const sortedExpenses = [...expenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-      const actualIndex = expenses.indexOf(sortedExpenses[selectedExpenseIndex]);
-      newExpenses[actualIndex] = expenseData;
-    } else {
-      newExpenses.push(expenseData);
+    setSaving(true);
+    try {
+      if (selectedExpenseIndex !== null) {
+        await updateUpcomingExpense(upcomingExpenses[selectedExpenseIndex]._id, expenseData);
+      } else {
+        await addUpcomingExpense(expenseData);
+      }
+      handleAddExpense();
+    } catch (error) {
+      alert('Error saving expense: ' + error.message);
+    } finally {
+      setSaving(false);
     }
-    
-    setExpenses(newExpenses);
-    localStorage.setItem("upcomingExpenses", JSON.stringify(newExpenses));
-    
-    // Reset form
-    handleAddExpense();
   };
 
-  // Handle delete expense
-  const handleDeleteExpense = () => {
+  const handleDeleteExpense = async () => {
     if (selectedExpenseIndex === null) return;
     
     if (window.confirm("Are you sure you want to delete this expense?")) {
-      const sortedExpenses = [...expenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-      const actualIndex = expenses.indexOf(sortedExpenses[selectedExpenseIndex]);
-      
-      const newExpenses = [...expenses];
-      newExpenses.splice(actualIndex, 1);
-      
-      setExpenses(newExpenses);
-      localStorage.setItem("upcomingExpenses", JSON.stringify(newExpenses));
-      
-      // Reset form
-      handleAddExpense();
+      setSaving(true);
+      try {
+        await deleteUpcomingExpense(upcomingExpenses[selectedExpenseIndex]._id);
+        handleAddExpense();
+      } catch (error) {
+        alert('Error deleting expense: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
-  // Sort expenses by due date
-  const sortedExpenses = [...expenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  const sortedExpenses = [...upcomingExpenses].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+  if (loading) return <div className="text-center py-4">Loading expenses data...</div>;
 
   return (
     <div id="expenses-section" className="finances-content">
@@ -152,7 +139,7 @@ function Expenses() {
                     }
                     
                     return (
-                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectExpense(index); }}>
+                      <a href="#" className="list-group-item list-group-item-action" key={expense._id} onClick={(e) => { e.preventDefault(); selectExpense(index); }}>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">
@@ -162,7 +149,7 @@ function Expenses() {
                             <small>Due: {formatDate(dueDate)}</small>
                           </div>
                           <div className="text-end">
-                            <div>${expense.amount}</div>
+                            <div>{symbol}{expense.amount}</div>
                             <small className={`badge ${statusClass}`}>
                               {diffDays < 0 ? 'Overdue' : diffDays === 0 ? 'Today' : `${diffDays} days`}
                             </small>
@@ -173,7 +160,7 @@ function Expenses() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddExpense}>Add Expense</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddExpense}>Add Expense</button>
             </div>
           </div>
         </div>
@@ -190,7 +177,7 @@ function Expenses() {
                 <div className="mb-3">
                   <label htmlFor="amount" className="form-label">Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="amount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.amount} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -203,8 +190,8 @@ function Expenses() {
                   <label htmlFor="isRecurring" className="form-check-label" >Recurring Expense</label>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary">Save Expense</button>
-                  <button type="button" className="btn btn-danger" onClick={handleDeleteExpense} disabled={selectedExpenseIndex === null}>Delete</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Expense'}</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteExpense} disabled={selectedExpenseIndex === null || saving}>Delete</button>
                 </div>
               </form>
             </div>

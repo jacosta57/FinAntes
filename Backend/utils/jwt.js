@@ -10,8 +10,7 @@ const generateRefreshToken = (user) => {
 }
 
 const authenticateAccessToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies.accessToken;
     if (token == null) { return res.status(401).send("Not authorized") }
 
     jwt.verify(token, process.env.JWT_ACCESS_SECRET, (error, user) => {
@@ -23,8 +22,7 @@ const authenticateAccessToken = (req, res, next) => {
 }
 
 const authenticateRefreshToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies.refreshToken;
     if (token == null) { return res.status(401).send("Not authorized") }
 
     jwt.verify(token, process.env.JWT_REFRESH_SECRET, (error, user) => {

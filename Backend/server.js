@@ -1,13 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 const { authenticateAccessToken } = require('./utils/jwt')
+const { connectDB, closeDB } = require('./utils/db');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -31,7 +34,13 @@ app.use('/api/upcoming-expenses', authenticateAccessToken, upcomingExpensesRoute
 app.use('/api/user', authenticateAccessToken, userRoutes);
 app.use('/api/creditCards', creditCardsRoutes);
 
+connectDB().then(() => {
+  app.listen(process.env.PORT, () => { console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`); });
+}).catch(err => {
+  console.error('Failed to connect to MongoDB:', err);
+  process.exit(1);
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`);
 });
-

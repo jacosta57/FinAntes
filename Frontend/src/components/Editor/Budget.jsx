@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useData } from 'DataContext';
 
 function Budget() {
-  const [categories, setCategories] = useState([]);
+  const { budgetCategories, addBudget, updateBudget, deleteBudget, loading, symbol } = useData();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [formData, setFormData] = useState({
     categoryName: '',
@@ -9,21 +10,7 @@ function Budget() {
     currentSpending: '',
     alertThreshold: '80'
   });
-
-  useEffect(() => {
-    const loadedCategories = JSON.parse(localStorage.getItem("budgetCategories") || "[]");
-    setCategories(loadedCategories);
-  }, []);
-
-  const [initialLoad, setInitialLoad] = useState(true);
-
-  useEffect(() => {
-    if (initialLoad) {
-      setInitialLoad(false);
-      return;
-    }
-    localStorage.setItem("budgetCategories", JSON.stringify(categories));
-  }, [categories, initialLoad]);
+  const [saving, setSaving] = useState(false);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -34,7 +21,7 @@ function Budget() {
   };
 
   const selectCategory = (index) => {
-    const category = categories[index];
+    const category = budgetCategories[index];
     if (!category) return;
 
     setSelectedCategoryIndex(index);
@@ -56,7 +43,7 @@ function Budget() {
     setSelectedCategoryIndex(null);
   };
 
-  const handleSaveCategory = (e) => {
+  const handleSaveCategory = async (e) => {
     e.preventDefault();
 
     const categoryData = {
@@ -84,32 +71,13 @@ function Budget() {
       categoryData.alertThreshold = 80;
     }
 
-    const newCategories = [...categories];
-
-    if (selectedCategoryIndex !== null) {
-      newCategories[selectedCategoryIndex] = categoryData; // Update existing category
-    } else {
-      newCategories.push(categoryData); // Add new category
-    }
-
-    setCategories(newCategories);
-
-    setFormData({
-      categoryName: '',
-      monthlyBudget: '',
-      currentSpending: '',
-      alertThreshold: '80'
-    });
-    setSelectedCategoryIndex(null);
-  };
-
-  const handleDeleteCategory = () => {
-    if (selectedCategoryIndex === null) return;
-
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      const newCategories = [...categories];
-      newCategories.splice(selectedCategoryIndex, 1);
-      setCategories(newCategories);
+    setSaving(true);
+    try {
+      if (selectedCategoryIndex !== null) {
+        await updateBudget(budgetCategories[selectedCategoryIndex]._id, categoryData);
+      } else {
+        await addBudget(categoryData);
+      }
 
       setFormData({
         categoryName: '',
@@ -118,8 +86,37 @@ function Budget() {
         alertThreshold: '80'
       });
       setSelectedCategoryIndex(null);
+    } catch (error) {
+      alert("Error saving category: " + error.message);
+    } finally {
+      setSaving(false);
     }
   };
+
+  const handleDeleteCategory = async () => {
+    if (selectedCategoryIndex === null) return;
+
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      setSaving(true);
+      try {
+        await deleteBudget(budgetCategories[selectedCategoryIndex]._id);
+
+        setFormData({
+          categoryName: '',
+          monthlyBudget: '',
+          currentSpending: '',
+          alertThreshold: '80'
+        });
+        setSelectedCategoryIndex(null);
+      } catch (error) {
+        alert("Error deleting category: " + error.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+  };
+
+  if (loading) return <div className="text-center py-4">Loading budget data...</div>;
 
   return (
     <>
@@ -131,17 +128,17 @@ function Budget() {
             <div className="card-header">Budget Categories</div>
             <div className="card-body">
               <div className="list-group">
-                {categories.length === 0 ? (<div className="list-group-item text-center text-muted">No budget categories yet. Add your first category!</div>) : (
-                  categories.map((category, index) => {
+                {budgetCategories.length === 0 ? (<div className="list-group-item text-center text-muted">No budget categories yet. Add your first category!</div>) : (
+                  budgetCategories.map((category, index) => {
                     const progress = Math.round((category.currentSpending / category.monthlyBudget) * 100) || 0;
                     const progressClass = progress > 90 ? "bg-danger" : progress > 70 ? "bg-warning" : "bg-success";
 
                     return (
-                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectCategory(index); }}>
+                      <a href="#" className="list-group-item list-group-item-action" key={category._id} onClick={(e) => { e.preventDefault(); selectCategory(index); }}>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{category.name}</h6>
-                            <small>${category.currentSpending} / ${category.monthlyBudget}</small>
+                            <small>{symbol}{category.currentSpending} / {symbol}{category.monthlyBudget}</small>
                           </div>
                           <span>{progress}%</span>
                         </div>
@@ -152,7 +149,7 @@ function Budget() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddCategory}>Add Category</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddCategory}>Add Category</button>
             </div>
           </div>
         </div>
@@ -169,14 +166,14 @@ function Budget() {
                 <div className="mb-3">
                   <label htmlFor="monthlyBudget" className="form-label">Monthly Budget</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="monthlyBudget" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.monthlyBudget} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="currentSpending" className="form-label">Current Spending</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="currentSpending" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentSpending} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -185,8 +182,8 @@ function Budget() {
                   <input id="alertThreshold" type="number" className="form-control" placeholder="80" min="0" max="100" value={formData.alertThreshold} onChange={handleInputChange} />
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary">Save Category</button>
-                  <button type="button" className="btn btn-danger" onClick={handleDeleteCategory} disabled={selectedCategoryIndex === null}>Delete</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Category'}</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteCategory} disabled={selectedCategoryIndex === null || saving}>Delete</button>
                 </div>
               </form>
             </div>

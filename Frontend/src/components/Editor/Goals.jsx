@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useData } from 'DataContext';
 
 function Goals() {
-  const [goals, setGoals] = useState([]);
+  const { financialGoals, addGoal, updateGoal, deleteGoal, loading, symbol } = useData();
   const [selectedGoalIndex, setSelectedGoalIndex] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -9,11 +10,7 @@ function Goals() {
     currentAmount: '',
     targetDate: ''
   });
-
-  useEffect(() => {
-    const loadedGoals = JSON.parse(localStorage.getItem("financialGoals") || "[]");
-    setGoals(loadedGoals);
-  }, []);
+  const [saving, setSaving] = useState(false);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -29,7 +26,7 @@ function Goals() {
   };
 
   const selectGoal = (index) => {
-    const goal = goals[index];
+    const goal = financialGoals[index];
     
     if (!goal) return;
     
@@ -61,7 +58,7 @@ function Goals() {
     setSelectedGoalIndex(null);
   };
 
-  const handleSaveGoal = (e) => {
+  const handleSaveGoal = async (e) => {
     e.preventDefault();
     
     const goalData = {
@@ -90,35 +87,13 @@ function Goals() {
       return;
     }
 
-    const newGoals = [...goals];
-    
-    if (selectedGoalIndex !== null) {
-      newGoals[selectedGoalIndex] = goalData;
-    } else {
-      newGoals.push(goalData);
-    }
-
-    setGoals(newGoals);
-    localStorage.setItem("financialGoals", JSON.stringify(newGoals));
-
-    setFormData({
-      name: '',
-      targetAmount: '',
-      currentAmount: '',
-      targetDate: ''
-    });
-    setSelectedGoalIndex(null);
-  };
-
-  const handleDeleteGoal = () => {
-    if (selectedGoalIndex === null) return;
-
-    if (window.confirm("Are you sure you want to delete this goal?")) {
-      const newGoals = [...goals];
-      newGoals.splice(selectedGoalIndex, 1);
-      
-      setGoals(newGoals);
-      localStorage.setItem("financialGoals", JSON.stringify(newGoals));
+    setSaving(true);
+    try {
+      if (selectedGoalIndex !== null) {
+        await updateGoal(financialGoals[selectedGoalIndex]._id, goalData);
+      } else {
+        await addGoal(goalData);
+      }
 
       setFormData({
         name: '',
@@ -127,8 +102,37 @@ function Goals() {
         targetDate: ''
       });
       setSelectedGoalIndex(null);
+    } catch (error) {
+      alert('Error saving goal: ' + error.message);
+    } finally {
+      setSaving(false);
     }
   };
+
+  const handleDeleteGoal = async () => {
+    if (selectedGoalIndex === null) return;
+
+    if (window.confirm("Are you sure you want to delete this goal?")) {
+      setSaving(true);
+      try {
+        await deleteGoal(financialGoals[selectedGoalIndex]._id);
+
+        setFormData({
+          name: '',
+          targetAmount: '',
+          currentAmount: '',
+          targetDate: ''
+        });
+        setSelectedGoalIndex(null);
+      } catch (error) {
+        alert('Error deleting goal: ' + error.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+  };
+
+  if (loading) return <div className="text-center py-4">Loading goals data...</div>;
 
   return (
     <div id="goals-section" className="finances-content">
@@ -140,18 +144,18 @@ function Goals() {
             <div className="card-header">Your Goals</div>
             <div className="card-body">
               <div className="list-group">
-                {goals.length === 0 ? (
+                {financialGoals.length === 0 ? (
                   <div className="list-group-item text-center text-muted">No financial goals added yet.</div>
                 ) : (
-                  goals.map((goal, index) => {
+                  financialGoals.map((goal, index) => {
                     const progress = Math.round((goal.currentAmount / goal.targetAmount) * 100) || 0;
                     
                     return (
-                      <a href="#" className="list-group-item list-group-item-action" key={index} onClick={(e) => { e.preventDefault(); selectGoal(index); }}>
+                      <a href="#" className="list-group-item list-group-item-action" key={goal._id} onClick={(e) => { e.preventDefault(); selectGoal(index); }}>
                         <div className="d-flex justify-content-between align-items-center">
                           <div>
                             <h6 className="mb-0">{goal.name}</h6>
-                            <small className="text-muted">Target: ${goal.targetAmount} by {formatDate(goal.targetDate)}</small>
+                            <small className="text-muted">Target: {symbol}{goal.targetAmount} by {formatDate(goal.targetDate)}</small>
                           </div>
                           <span>{progress}%</span>
                         </div>
@@ -163,7 +167,7 @@ function Goals() {
                   })
                 )}
               </div>
-              <button className="btn btn-primary mt-3 w-100" onClick={handleAddGoal}>Add Goal</button>
+              <button className="btn btn-success mt-3 w-100" onClick={handleAddGoal}>Add Goal</button>
             </div>
           </div>
         </div>
@@ -180,14 +184,14 @@ function Goals() {
                 <div className="mb-3">
                   <label htmlFor="targetAmount" className="form-label">Target Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="targetAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.targetAmount} onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="currentAmount" className="form-label">Current Amount</label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">{symbol}</span>
                     <input id="currentAmount" type="number" className="form-control" placeholder="0.00" min="0" step="0.01" value={formData.currentAmount} onChange={handleInputChange} />
                   </div>
                 </div>
@@ -196,8 +200,8 @@ function Goals() {
                   <input id="targetDate" type="date" className="form-control" value={formData.targetDate} onChange={handleInputChange} />
                 </div>
                 <div className="d-flex justify-content-between">
-                  <button type="submit" className="btn btn-primary">Save Goal</button>
-                  <button type="button" className="btn btn-danger" onClick={handleDeleteGoal} disabled={selectedGoalIndex === null}>Delete</button>
+                  <button type="submit" className="btn btn-success" disabled={saving}>{saving ? 'Saving...' : 'Save Goal'}</button>
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteGoal} disabled={selectedGoalIndex === null || saving}>Delete</button>
                 </div>
               </form>
             </div>

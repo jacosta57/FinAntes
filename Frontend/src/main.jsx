@@ -10,31 +10,73 @@ import Settings from 'pages/Settings'
 import CreditCards from 'pages/CreditCards'
 import Authors from 'pages/Authors'
 import Editor from 'pages/Editor'
+import Authentication from 'pages/Authentication'
+import PrivateRoute from 'pages/PrivateRoute'
+import { AuthProvider } from 'AuthContext'
+import axios from 'axios'
+import { DataProvider } from 'DataContext'
 import Checkout from 'pages/Checkout'
+
+document.documentElement.setAttribute('data-theme', "dark");
+document.documentElement.setAttribute('data-color', "blue");
+
+axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.withCredentials = true;
+axios.defaults.timeout = 30000;
+
+axios.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/api/auth/verify') &&
+      !originalRequest.url?.includes('/api/auth/refresh-token')
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        await axios.post('/api/auth/refresh-token');
+        return axios(originalRequest);
+      } catch (refreshError) {
+        if (window.location.pathname.match(/^\/(dashboard|editor|settings)/)) { window.location.href = '/auth?tab=login' }
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 const router = createBrowserRouter(
   createRoutesFromElements((
     <Route path='/' element={<RootLayout />}>
+      {/* Public routes */}
       <Route path='/' element={<App />} />
-      {<Route path='/creditcards' element={<CreditCards />}/>}
-      {<Route path='/authors' element={<Authors />}/>}
+      <Route path='/creditcards' element={<CreditCards />} />
+      <Route path='/auth' element={<Authentication />} />
+      <Route path='/authors' element={<Authors />} />
       {<Route path='/checkout' element={<Checkout />}/>}
-      <Route path='/dashboard' element={<Dashboard />} />
       {/* <Route path='/demo' element={<Demo />}/> */}
-      <Route path='/editor' element={<Editor />}/>
-      <Route path='/settings' element={<Settings />} />
+
+      {/* Protected routes */}
+      <Route element={<PrivateRoute />}>
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/editor' element={<Editor />} />
+        <Route path='/settings' element={<Settings />} />
+      </Route>
     </Route>
   ))
 )
 
-const theme = localStorage.getItem("theme") || "light";
-const colorScheme = localStorage.getItem("color") || "blue";
-
-document.documentElement.setAttribute("data-theme", theme);
-document.documentElement.setAttribute("data-color", colorScheme);
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <DataProvider>
+        <RouterProvider router={router} />
+      </DataProvider>
+    </AuthProvider>
   </StrictMode>,
 )

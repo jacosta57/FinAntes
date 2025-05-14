@@ -1,10 +1,15 @@
+import { useData } from 'DataContext';
+
 function CashFlow() {
-    const incomeSources = JSON.parse(localStorage.getItem("incomeSources")) || [{ amount: 0 }];
+    const { incomeSources, regularExpenses, loading, error, symbol } = useData();
+
+    if (loading) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Loading...</div></div></div>;
+    if (error) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Error: {error}</div></div></div>;
+
     let totalIncome = 0;
     incomeSources.forEach(source => { totalIncome += source.amount });
     totalIncome = totalIncome.toFixed(2);
 
-    const regularExpenses = JSON.parse(localStorage.getItem("regularExpenses")) || [{ amount: 0 }];
     let totalExpenses = 0;
     regularExpenses.forEach(source => { totalExpenses += source.amount });
     totalExpenses = totalExpenses.toFixed(2);
@@ -22,15 +27,15 @@ function CashFlow() {
                 <div className="card-body">
                     <div className="d-flex justify-content-between mb-3">
                         <span>Income</span>
-                        <span id="CashFlow-Income" className="text-success">${totalIncome}</span>
+                        <span id="CashFlow-Income" className="text-success">{symbol}{totalIncome}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <span>Expenses</span>
-                        <span id="CashFlow-Expenses" className="text-danger">${totalExpenses}</span>
+                        <span id="CashFlow-Expenses" className="text-danger">{symbol}{totalExpenses}</span>
                     </div>
                     <div className="d-flex justify-content-between">
                         <span className="fw-bold">Net Flow</span>
-                        <span id="CashFlow-Net" className={netClass}>${totalNet}</span>
+                        <span id="CashFlow-Net" className={netClass}>{symbol}{totalNet}</span>
                     </div>
                 </div>
             </div>

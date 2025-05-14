@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
+import { useData } from 'DataContext';
 
 function Expenses() {
-    const [upcomingExpenses, setUpcomingExpenses] = useState(JSON.parse(localStorage.getItem("upcomingExpenses")) || [])
-    let expenseElement = <p className="text-center text-muted">No upcoming expenses to display.</p>
+    const { upcomingExpenses, loading, error, symbol } = useData();
+    const [sortedExpenses, setSortedExpenses] = useState([]);
 
     useEffect(() => {
-        const sortedExpenses = [...upcomingExpenses].sort((a, b) => { return new Date(a.dueDate) - new Date(b.dueDate); });
-        setUpcomingExpenses(sortedExpenses);
-    }, []);
+        const sorted = [...upcomingExpenses].sort((a, b) => { return new Date(a.dueDate) - new Date(b.dueDate); });
+        setSortedExpenses(sorted);
+    }, [upcomingExpenses]);
+
+    if (loading) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Loading...</div></div></div>;
+    if (error) return <div className="col-md-4"><div className="card h-100 shadow-sm"><div className="card-body d-flex justify-content-center align-items-center">Error: {error}</div></div></div>;
+
+    let expenseElement = <p className="text-center text-muted">No upcoming expenses to display.</p>
 
     return (
         <div className="col-md-4">
@@ -16,7 +22,7 @@ function Expenses() {
                     <h5 className="card-title mb-0 text-primary">Upcoming Expenses</h5>
                 </div>
                 <div className="card-body">
-                    {upcomingExpenses.length === 0 ? expenseElement : upcomingExpenses.map((expense, index) => {
+                    {sortedExpenses.length === 0 ? expenseElement : sortedExpenses.map((expense, index) => {
                         let expenseElementClassName = "mb-3 p-2 border-bottom";
 
                         const dueDate = new Date(expense.dueDate);
@@ -43,7 +49,7 @@ function Expenses() {
                                     </span>
                                 </div>
                                 <div className="d-flex justify-content-between mt-2">
-                                    <span>${expense.amount.toLocaleString()}</span>
+                                    <span>{symbol}{expense.amount.toLocaleString()}</span>
                                     <span className={urgencyClass}>Due: {formattedDate}</span>
                                 </div>
                             </div>
