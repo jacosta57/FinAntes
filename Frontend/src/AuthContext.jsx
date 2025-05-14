@@ -7,13 +7,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [location, setLocation] = useState(window.location.pathname);
 
   useEffect(() => {
-    window.addEventListener('popstate', () => { setLocation(window.location.pathname) });
-    const protectedRoutes = ['/dashboard', '/settings', '/editor'];
-    if (protectedRoutes.includes(location)) { checkAuth() }
-  }, [location]);
+    const protectedRoutes = ['/dashboard', '/settings', '/editor', '/auth'];
+    if (protectedRoutes.includes(window.location.pathname) && document.cookie) { checkAuth() }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -29,7 +27,7 @@ export function AuthProvider({ children }) {
       setUser(response.data.user);
       setLoggedIn(true);
     } catch (error) {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 401 && document.cookie) {
         try {
           await refreshToken();
           const response = await axios.get('/api/auth/verify');

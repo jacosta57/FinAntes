@@ -39,7 +39,7 @@ router.post("/register", async (req, res) => {
       expiresAt: expiresAt,
     };
 
-    newDocument.refreshToken = refreshTokenObject;
+    newDocument.refreshTokens = [refreshTokenObject];
 
     const result = await db.collection("users").insertOne(newDocument);
 
@@ -131,7 +131,7 @@ router.post("/logout", async (req, res) => {
     if (!refreshToken) { return res.status(400).send("Refresh token required") }
     const db = getDB();
 
-    const result = await db.collection("users").updateOne({ "refreshToken.token": refreshToken }, { $set: { refreshToken: null } });
+    const result = await db.collection("users").updateOne({ "refreshTokens.token": refreshToken }, { $pull: { refreshTokens: { token: refreshToken } } });
     if (result.modifiedCount === 0) { return res.status(404).send("Token not found") }
 
     res.clearCookie("accessToken");
@@ -170,7 +170,7 @@ router.get("/verify", authenticateAccessToken, async (req, res) => {
       .collection("users")
       .findOne(
         { userID: req.user.userID },
-        { projection: { password: 0, refreshToken: 0, _id: 0 } }
+        { projection: { password: 0, refreshTokens: 0, _id: 0 } }
       );
 
     if (!user) {

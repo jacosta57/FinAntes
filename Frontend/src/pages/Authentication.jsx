@@ -8,8 +8,10 @@ const Authentication = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('login');
-    const { user, } = useAuth();
-    
+    const { user, checkAuth } = useAuth();
+
+    useEffect(() => { if (document.cookies) { checkAuth() } }, []);
+
     useEffect(() => {
         if (user) {
             const queryParams = new URLSearchParams(location.search);
@@ -17,18 +19,18 @@ const Authentication = () => {
             navigate(redirectTo);
         }
     }, [user, navigate, location]);
-    
+
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const tabParam = queryParams.get('tab');
-        
+
         if (tabParam === 'login' || tabParam === 'register') setActiveTab(tabParam);
     }, [location.search]);
-    
+
     const onClickHandler = (e) => {
         const tab = e.target.dataset.tab;
         setActiveTab(tab);
-        
+
         const queryParams = new URLSearchParams(location.search);
         queryParams.set('tab', tab);
         navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
