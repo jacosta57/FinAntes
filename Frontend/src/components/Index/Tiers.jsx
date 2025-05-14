@@ -48,6 +48,8 @@ function Tiers() {
                                 <li>Advanced Analytics</li>
                                 <li>Custom Themes</li>
                             </ul>
+
+                            <Link to="/checkout" className="w-100"><button className="btn btn-outline-light btn-success">Go Premium</button></Link>
                         </div>
                     </div>
                 </div>

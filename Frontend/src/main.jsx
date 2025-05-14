@@ -10,6 +10,7 @@ import Settings from 'pages/Settings'
 import CreditCards from 'pages/CreditCards'
 import Authors from 'pages/Authors'
 import Editor from 'pages/Editor'
+import Checkout from 'pages/Checkout'
 
 const router = createBrowserRouter(
   createRoutesFromElements((
@@ -17,6 +18,7 @@ const router = createBrowserRouter(
       <Route path='/' element={<App />} />
       {<Route path='/creditcards' element={<CreditCards />}/>}
       {<Route path='/authors' element={<Authors />}/>}
+      {<Route path='/checkout' element={<Checkout />}/>}
       <Route path='/dashboard' element={<Dashboard />} />
       {/* <Route path='/demo' element={<Demo />}/> */}
       <Route path='/editor' element={<Editor />}/>
