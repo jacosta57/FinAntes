@@ -15,7 +15,7 @@ import PrivateRoute from 'pages/PrivateRoute'
 import { AuthProvider } from 'AuthContext'
 import axios from 'axios'
 import { DataProvider } from 'DataContext'
-
+import Checkout from 'pages/Checkout'
 
 document.documentElement.setAttribute('data-theme', "dark");
 document.documentElement.setAttribute('data-color', "blue");
@@ -58,6 +58,8 @@ const router = createBrowserRouter(
       <Route path='/creditcards' element={<CreditCards />} />
       <Route path='/auth' element={<Authentication />} />
       <Route path='/authors' element={<Authors />} />
+      {<Route path='/checkout' element={<Checkout />}/>}
+      {/* <Route path='/demo' element={<Demo />}/> */}
 
       {/* Protected routes */}
       <Route element={<PrivateRoute />}>

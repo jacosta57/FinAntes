@@ -21,6 +21,7 @@ const investmentsRoutes = require('./routes/investments');
 const regularExpensesRoutes = require('./routes/regularExpenses');
 const upcomingExpensesRoutes = require('./routes/upcomingExpenses');
 const userRoutes = require('./routes/user');
+const creditCardsRoutes = require('./routes/creditCards');
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -31,10 +32,15 @@ app.use('/api/investments', authenticateAccessToken, investmentsRoutes);
 app.use('/api/regular-expenses', authenticateAccessToken, regularExpensesRoutes);
 app.use('/api/upcoming-expenses', authenticateAccessToken, upcomingExpensesRoutes);
 app.use('/api/user', authenticateAccessToken, userRoutes);
+app.use('/api/creditCards', creditCardsRoutes);
 
 connectDB().then(() => {
   app.listen(process.env.PORT, () => { console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`); });
 }).catch(err => {
   console.error('Failed to connect to MongoDB:', err);
   process.exit(1);
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server running at http://${process.env.HOST}:${process.env.PORT}/`);
 });

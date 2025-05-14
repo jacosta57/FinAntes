@@ -12,6 +12,7 @@ function CreditCards(){
 
             <CardList
                 selectedCompany={selectedCompany}
+                setSelectedCompany={setSelectedCompany}
                 
             
             />
