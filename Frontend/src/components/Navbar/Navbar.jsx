@@ -1,9 +1,12 @@
+import { useData } from 'DataContext';
 import { NavLink, useLocation } from 'react-router-dom';
 
 function Navbar() {
   const location = useLocation();
   let navbarLinks;
-  const userStatus = localStorage.getItem('userStatus') || 'basic';
+  const { userProfile } = useData();
+  const userStatus = userProfile?.userStatus;
+  
 
   switch (location.pathname) {
     case '/dashboard':

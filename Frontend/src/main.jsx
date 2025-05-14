@@ -34,9 +34,9 @@ const router = createBrowserRouter(
       <Route path='/creditcards' element={<CreditCards />} />
       <Route path='/auth' element={<Authentication />} />
       <Route path='/authors' element={<Authors />} />
-      {<Route path='/checkout' element={<Checkout />}/>}
-      {<Route path='/confirmPremium' element={<ConfirmPremium />}/>}
-      { <Route path='/demo' element={<Demo />}/> }
+      <Route path='/checkout' element={<Checkout />}/>
+      <Route path='/confirmPremium' element={<ConfirmPremium />}/>
+      <Route path='/demo' element={<Demo />}/> 
 
       {/* Protected routes */}
       <Route element={<PrivateRoute />}>

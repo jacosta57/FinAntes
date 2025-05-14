@@ -1,18 +1,25 @@
+import { useData } from 'DataContext';
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom';
 
 function Tiers() {
+    const { updateUserProfile, userProfile } = useData();
     const [activeModal, setActiveModal] = useState(null);
     const [confirmChecked, setConfirmChecked] = useState(false);
     const navigate = useNavigate();
 
-    const confirmSwitchOnClick = (tier) => {
-        alert(`You have switched to the ${tier} version`);
+    const confirmSwitchOnClick = async (tier) => {
+        try {
+            await updateUserProfile({ ...userProfile, userStatus: tier.toLowerCase() });
+            alert(`You have switched to the ${tier} version`);
+        }
+        catch (error) { alert("Error updating currency: " + error.message); }
 
         setConfirmChecked(false);
         setActiveModal(null);
     };
+
 
     return (
         <div id="tiers-section" className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4 settings-content">

@@ -17,6 +17,7 @@ export const DataProvider = ({ children }) => {
     loading: false,
     error: null,
     symbol: '',
+    userStatus: '',
   });
 
   const fetchAllData = async () => {
@@ -69,7 +70,8 @@ export const DataProvider = ({ children }) => {
         userProfile: cleanUser,
         loading: false,
         error: null,
-        symbol: symbol
+        symbol: symbol,
+        userStatus: cleanUser.userStatus || 'basic'
       });
 
       if (cleanUser && cleanUser.theme) {
