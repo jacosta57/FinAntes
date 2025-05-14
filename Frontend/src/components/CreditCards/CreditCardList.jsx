@@ -7,24 +7,24 @@ function CreditCardList({selectedCompany, setSelectedCompany}){
         getCards();
     }, [selectedCompany]);
 
-    function getCards(){
-        let url = "http://127.0.0.1:8080/api/creditCards";
-
-        if (selectedCompany) {
-            url += `?company=${encodeURIComponent(selectedCompany)}`;
-        }
+    function getCards() {
+        let url = "/assets/creditCards.json"; 
 
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
-                setCards(data);
-                console.log(data);
                 
+                const filteredCards = selectedCompany 
+                    ? data.filter(card => card.company === selectedCompany)
+                    : data;
+
+                setCards(filteredCards);
+                console.log(filteredCards);
             })
-        .catch((error) => {
-            console.error("Error fetching credit Cards:", error);
-        });
-    }
+            .catch((error) => {
+                console.error("Error fetching credit cards:", error);
+    });
+}
     
 
     return(
