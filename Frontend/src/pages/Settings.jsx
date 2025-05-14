@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Appearance from 'Settings/Appearance';
 import Profile from 'Settings/Profile';
 import Preferences from 'Settings/Preferences';
-import Logout from 'components/Settings/Logout';
-import Tiers from './Tiers';
+import Logout from 'Settings/Logout';
+import Tiers from 'Settings/Tiers';
 
 function Settings() {
     const [activeTab, setActiveTab] = useState('appearance')
