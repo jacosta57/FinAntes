@@ -33,6 +33,15 @@ function Navbar() {
         </>
       )
       break;
+    case '/demo':
+      navbarLinks = (
+        <>
+          <span id="UserStatus" className="badge-lg rounded-pill me-4 px-3 py-1 border border-white text-white">Demo</span>
+          <NavLink to="/auth?tab=login"><button className="btn btn-outline-light mx-2">Login</button></NavLink>
+          <NavLink to="/auth?tab=register"><button className="btn btn-outline-light">Signup</button></NavLink>
+        </>
+      )
+      break;
     default:
       navbarLinks = (
         <>

@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from 'AuthContext';
 
 function Logout() {
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
   const { logout } = useAuth();
 
   const handleLogout = async () => {

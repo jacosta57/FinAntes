@@ -1,21 +1,14 @@
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom';
 
 function Tiers() {
     const [activeModal, setActiveModal] = useState(null);
     const [confirmChecked, setConfirmChecked] = useState(false);
-
-    
-
-    
+    const navigate = useNavigate();
 
     const confirmSwitchOnClick = (tier) => {
-        
-
-
         alert(`You have switched to the ${tier} version`);
-
-        //Set User tier here
 
         setConfirmChecked(false);
         setActiveModal(null);
@@ -25,8 +18,6 @@ function Tiers() {
         <div id="tiers-section" className="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4 settings-content">
             <h3 className="mb-4 text-primary">Tiers</h3>
 
-            
-
             <div className="card mb-4">
                 <div className="card-header text-success">Demo FREE</div>
                 <div className="card-body">
@@ -35,21 +26,20 @@ function Tiers() {
                         <li>View Sample Dashboard</li>
                         <li>Basic Features Demo</li>
                         <li>Example Reports</li>
-                        
                     </ul>
                     <button className="btn btn-success" onClick={() => setActiveModal("demo")}>Switch to Demo</button>
                 </div>
             </div>
 
             <div className="card mb-4">
-                <div className="card-header text-success">Basic $0.00</div>
+                <div className="card-header text-success">Basic FREE</div>
                 <div className="card-body">
                     <p className="text-muted mb-3">Features for this tier:</p>
                     <ul className="mb-3">
                         <li>Full Budget Planning</li>
                         <li>Investment Tracking</li>
                         <li>CSV Import/Export</li>
-                        
+
                     </ul>
                     <button className="btn btn-success" onClick={() => setActiveModal("basic")}>Switch to Basic</button>
                 </div>
@@ -63,7 +53,6 @@ function Tiers() {
                         <li>Real-time Market Data</li>
                         <li>Advanced Analytics</li>
                         <li>Custom Themes</li>
-                        
                     </ul>
                     <button className="btn btn-success" onClick={() => setActiveModal("premium")}>Switch to Premium</button>
                 </div>
@@ -75,11 +64,11 @@ function Tiers() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Switch to Demo version?</p>       
+                    <p>Go to Demo version?</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setActiveModal(null)}>Cancel</Button>
-                    <Button variant="success" onClick={() => confirmSwitchOnClick('demo')}>Switch</Button>
+                    <Button variant="success" onClick={() => navigate('/demo')}>Switch</Button>
                 </Modal.Footer>
             </Modal>
 
@@ -90,7 +79,7 @@ function Tiers() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Switch to Basic version?</p>       
+                    <p>Switch to Basic version?</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setActiveModal(null)}>Cancel</Button>
@@ -105,7 +94,7 @@ function Tiers() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Switch to Premium version?</p>       
+                    <p>Switch to Premium version?</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setActiveModal(null)}>Cancel</Button>
