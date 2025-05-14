@@ -10,7 +10,7 @@ function Hero() {
                         <Link to="/creditCards"><button className="btn btn-outline-light">Browse Credit Cards</button></Link>
                     </div>
                     <div className="col">
-                        <Link to="/settings"><button className="btn btn-outline-light">Get Started Free</button></Link>
+                        <Link to="/auth?tab=register"><button className="btn btn-outline-light">Get Started Free</button></Link>
                     </div>
                     <div className="col">
                         <Link to="/authors"><button className="btn btn-outline-light">About Us</button></Link>
