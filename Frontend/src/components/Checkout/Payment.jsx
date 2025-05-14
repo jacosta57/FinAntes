@@ -9,12 +9,16 @@ function Checkout() {
     firstName: "",
     lastName: "",
     cardNumber: "",
+    cvc:"",
+    expDate:"",
     zipCode: "",
     email: ""
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [cardError, setCardError] = useState("");
   const [zipError, setZipError] = useState("");
+  const [cvcError, setCvcError] = useState("");
+  const [expError, setExpError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,17 +40,26 @@ function Checkout() {
       const zip = value.replace(/\D/g, "").slice(0, 5);
       setFormData((prev) => ({ ...prev, [name]: zip }));
     } 
+    else if (name === "expDate") {
+      let exp = value.replace(/\D/g, "").slice(0, 4); // Max 4 digits (MMYY)
+      if (exp.length > 2) {
+        exp = exp.slice(0, 2) + "/" + exp.slice(2); // Format as MM/YY
+      }
+      setFormData((prev) => ({ ...prev, [name]: exp }));
+}
     else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const validateForm = () => {
-    const { firstName, lastName, cardNumber, zipCode } = formData;
+    const { firstName, lastName, cardNumber, zipCode, cvc, expDate} = formData;
     const cardDigits = cardNumber.replace(/\D/g, "");
 
     const isCardValid = cardDigits.length === 15 || cardDigits.length === 16;
     const isZipValid = zipCode.length === 5;
+    const isCvcValid = cvc.length === 3 || cvc.length === 4;
+    
 
     if (!isCardValid && cardDigits.length > 0) {
       setCardError("Credit card must be 15 or 16 digits.");
@@ -54,6 +67,8 @@ function Checkout() {
     else {
       setCardError("");
     }
+
+    
 
     if (!isZipValid && zipCode.length > 0)
     {
@@ -63,12 +78,21 @@ function Checkout() {
       setZipError("");
     }
 
+    if (!isCvcValid && cvc.length > 0)
+    {
+      setCvcError("Invalid. Must be 3 or 4 digits");
+    }
+    else{
+      setCvcError("");
+    }
+
 
     const isValid =
       firstName.trim() &&
       lastName.trim() &&
       isCardValid &&
-      isZipValid;
+      isZipValid
+    ;
       
 
     setIsFormValid(isValid);
@@ -119,6 +143,36 @@ function Checkout() {
               />
               {cardError && (
                 <small className="text-danger">{cardError}</small>
+              )}
+            </div>
+            <div className="mb-2">
+              <label className="form-label">Expiration Date</label>
+              <input
+                type="text"
+                name="expDate"
+                className="form-control"
+                placeholder="MM/YY"
+                value={formData.expDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            {expError && (
+                <small className="text-danger">{expError}</small>
+              )}
+            <div className="mb-2">
+              <label className="form-label">CVC</label>
+              <input
+                type="text"
+                name="cvc"
+                className="form-control"
+                value={formData.cvc}
+                onChange={handleChange}
+                maxLength="4"
+                required
+              />
+              {cvcError && (
+                <small className="text-danger">{cvcError}</small>
               )}
             </div>
             <div className="mb-2">
