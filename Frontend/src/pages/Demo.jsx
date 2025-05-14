@@ -1,9 +1,9 @@
-import Budget from "Dashboard/Budget";
-import CashFlow from "Dashboard/CashFlow";
-import Spending from "Dashboard/Spending";
-import Portfolio from 'Dashboard/Portfolio';
-import Goals from 'Dashboard/Goals';
-import Expenses from "Dashboard/Expenses";
+import Budget from "components/Demo/Budget";
+import CashFlow from "components/Demo/CashFlow";
+import Spending from "components/Demo/Spending";
+import Portfolio from 'components/Demo/Portfolio';
+import Goals from 'components/Demo/Goals';
+import Expenses from "components/Demo/Expenses";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, LinearScale, CategoryScale, BarElement, PointElement, LineElement } from 'chart.js';
 
 function Dashboard() {
@@ -15,7 +15,7 @@ function Dashboard() {
 
     return (
         <>
-            <div id="DashboardContainer" className="container-fluid py-4">
+            <div className="container-fluid py-4">
                 <div className="row g-4 mb-4">
                     <Budget />
                     <Spending />
